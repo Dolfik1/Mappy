@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Mappy.Converters;
 using Items = System.Collections.Generic.IDictionary<string, object>;
 
 namespace Mappy.Utils
@@ -40,15 +41,15 @@ namespace Mappy.Utils
                     .Map(pfx, values);
             }
 
-            if (items.TryGetValue(prefix + name, out var value)
-                && value != null)
+            if (!items.TryGetValue(prefix + name, out var value)) 
+                return default(T);
+            
+            foreach (var converter in options.Converters)
             {
-                var tp = typeof(T);
-                if (value.GetType() != tp)
+                if (converter.CanConvert<T>(value))
                 {
-                    return (T)System.Convert.ChangeType(value, tp);
+                    return converter.Convert<T>(value);
                 }
-                return (T)value;
             }
 
             return default(T);

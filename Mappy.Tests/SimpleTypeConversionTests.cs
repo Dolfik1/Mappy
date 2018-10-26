@@ -1,9 +1,11 @@
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Xunit;
 
 namespace Mappy.Tests
 {
-    public class SimplyMapTests
+    public class SimpleTypeConversionTests
     {
         public class PersonWithFields
         {
@@ -20,7 +22,7 @@ namespace Mappy.Tests
         }
 
         [Fact]
-        public void Can_Map_Matching_Field_Names()
+        public void Can_Map_Matching_Field_Names_With_Different_Types()
         {
             // Arrange
             const int id = 1;
@@ -29,12 +31,13 @@ namespace Mappy.Tests
 
             var dictionary = new Dictionary<string, object>
             {
-                {"Id", id},
+                {"Id", double.Parse("1.245698", CultureInfo.InvariantCulture)},
                 {"FirstName", firstName},
                 {"LastName", lastName}
             };
 
             var mappy = new Mappy();
+            
             // Act
             var customer = mappy.Map<PersonWithFields>(dictionary);
 
@@ -46,7 +49,7 @@ namespace Mappy.Tests
         }
 
         [Fact]
-        public void Can_Map_Matching_Property_Names()
+        public void Can_Map_Matching_Property_Names_With_Different_Types()
         {
             // Arrange
             const int id = 1;
@@ -55,13 +58,13 @@ namespace Mappy.Tests
 
             var dictionary = new Dictionary<string, object>
             {
-                {"Id", id},
+                {"Id", Double.Parse("1.245698", CultureInfo.InvariantCulture)},
                 {"FirstName", firstName},
                 {"LastName", lastName}
             };
-
+            
             var mappy = new Mappy();
-
+            
             // Act
             var customer = mappy.Map<PersonWithProperties>(dictionary);
 

@@ -43,6 +43,5 @@ namespace Mappy.Tests
             Assert.NotNull(customer.Orders);
             Assert.Equal(0, customer.Orders.Count);
         }
-
     }
 }

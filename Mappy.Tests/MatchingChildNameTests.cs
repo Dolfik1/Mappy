@@ -26,8 +26,10 @@ namespace Mappy.Tests
         [Fact]
         public void Can_map_grandchild_with_parts_of_same_name_as_child()
         {
-            var data = new List<Dictionary<string, object>> {
-                new Dictionary<string, object> {
+            var data = new List<Dictionary<string, object>>
+            {
+                new Dictionary<string, object>
+                {
                     {"Id", 1},
                     {"Members_Id", 1},
                     {"Members_SubMembers_Id", 1}

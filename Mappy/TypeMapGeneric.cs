@@ -40,7 +40,9 @@ namespace Mappy
                     underlyingType = propOrFieldType.GetGenericArguments()[0];
                 }
 
-                var isComplex = underlyingType.Namespace != "System";
+                var isComplex = underlyingType.Namespace != "System"
+                                && !underlyingType.IsPrimitive 
+                                && !underlyingType.IsValueType;
 
 
                 MethodInfo convertMethod;
@@ -119,7 +121,7 @@ namespace Mappy
 
             var ids = IdentifierFieldsAndProps;
 
-            IEnumerable<int> hashCodes()
+            IEnumerable<int> HashCodes()
             {
                 foreach (var id in ids)
                 {
@@ -131,21 +133,15 @@ namespace Mappy
                 }
             }
 
-            return HashCode.CombineHashCodes(hashCodes());
+            return HashCode.CombineHashCodes(HashCodes());
         }
 
         internal bool HasValues(string prefix, Items items)
         {
-            foreach (var fieldOrProp in FieldsAndProps)
-            {
-                if (items.TryGetValue(prefix + fieldOrProp, out var value)
-                    && value != null)
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return items
+                .Any(x => 
+                    x.Key.StartsWith(prefix, Options.StringComparison)
+                    && x.Value != null);
         }
     }
 }

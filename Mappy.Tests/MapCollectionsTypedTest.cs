@@ -23,18 +23,18 @@ namespace Mappy.Tests
         {
             // Arrange
             var dictionary = new Dictionary<string, object>
-                         {
-                             { "CustomerId", 1 },
-                             { "OrdersIds_$", 3 },
-                         };
+            {
+                {"CustomerId", 1},
+                {"OrdersIds_$", 3},
+            };
 
             var dictionary2 = new Dictionary<string, object>
-                         {
-                             { "CustomerId", 1 },
-                             { "OrdersIds_$", 5 }
-                         };
+            {
+                {"CustomerId", 1},
+                {"OrdersIds_$", 5}
+            };
 
-            var list = new List<IDictionary<string, object>> { dictionary, dictionary2 };
+            var list = new List<IDictionary<string, object>> {dictionary, dictionary2};
 
             var mappy = new Mappy();
 
@@ -59,18 +59,18 @@ namespace Mappy.Tests
         {
             // Arrange
             var dictionary = new Dictionary<string, object>
-                         {
-                             { "CustomerNamesId", 1 },
-                             { "Names_$", "Name 1" },
-                         };
+            {
+                {"CustomerNamesId", 1},
+                {"Names_$", "Name 1"},
+            };
 
             var dictionary2 = new Dictionary<string, object>
-                         {
-                             { "CustomerNamesId", 1 },
-                             { "Names_$", "Name 2" }
-                         };
+            {
+                {"CustomerNamesId", 1},
+                {"Names_$", "Name 2"}
+            };
 
-            var list = new List<IDictionary<string, object>> { dictionary, dictionary2 };
+            var list = new List<IDictionary<string, object>> {dictionary, dictionary2};
 
             var mappy = new Mappy();
 
@@ -116,27 +116,27 @@ namespace Mappy.Tests
             {
                 new Dictionary<string, object>()
                 {
-                    { "Id", 1 } ,
-                    {"Name", "Merchant name" } ,
-                    { "Addresses_Id", 1} ,
-                    { "Addresses_AddressLine", "Address line 1"} ,
-                    { "Addresses_MerchantId", 1}
+                    {"Id", 1},
+                    {"Name", "Merchant name"},
+                    {"Addresses_Id", 1},
+                    {"Addresses_AddressLine", "Address line 1"},
+                    {"Addresses_MerchantId", 1}
                 },
                 new Dictionary<string, object>()
                 {
-                    { "Id", 1 } ,
-                    {"Name", "Merchant name" } ,
-                    { "Addresses_Id", 2} ,
-                    { "Addresses_AddressLine", "Address line 2"} ,
-                    { "Addresses_MerchantId", 1}
+                    {"Id", 1},
+                    {"Name", "Merchant name"},
+                    {"Addresses_Id", 2},
+                    {"Addresses_AddressLine", "Address line 2"},
+                    {"Addresses_MerchantId", 1}
                 },
                 new Dictionary<string, object>()
                 {
-                    { "Id", 1 } ,
-                    {"Name", "Merchant name" } ,
-                    { "Addresses_Id", 3} ,
-                    { "Addresses_AddressLine", "Address line 3"} ,
-                    { "Addresses_MerchantId", 1}
+                    {"Id", 1},
+                    {"Name", "Merchant name"},
+                    {"Addresses_Id", 3},
+                    {"Addresses_AddressLine", "Address line 3"},
+                    {"Addresses_MerchantId", 1}
                 },
             };
 
@@ -150,6 +150,5 @@ namespace Mappy.Tests
             Assert.Equal("Address line 2", merchant.Addresses.Skip(1).First().AddressLine);
             Assert.Equal("Address line 3", merchant.Addresses.Skip(2).First().AddressLine);
         }
-
     }
 }

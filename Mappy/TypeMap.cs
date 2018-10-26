@@ -19,7 +19,7 @@ namespace Mappy
             IdentifierFieldsAndProps = new HashSet<string>();
             FieldsAndProps = new HashSet<string>();
 
-            bool isIdentifier(string fieldOrPropName, Type fieldOrPropType, MemberInfo mi)
+            bool IsIdentifier(string fieldOrPropName, Type fieldOrPropType, MemberInfo mi)
             {
                 const StringComparison sc = StringComparison.InvariantCultureIgnoreCase;
                 return
@@ -32,7 +32,7 @@ namespace Mappy
             foreach (var field in type.GetFields())
             {
                 FieldsAndProps.Add(field.Name);
-                if (isIdentifier(field.Name, field.FieldType, field))
+                if (IsIdentifier(field.Name, field.FieldType, field))
                 {
                     IdentifierFieldsAndProps.Add(field.Name);
                 }
@@ -41,16 +41,11 @@ namespace Mappy
             foreach (var prop in type.GetProperties())
             {
                 FieldsAndProps.Add(prop.Name);
-                if (isIdentifier(prop.Name, prop.PropertyType, prop))
+                if (IsIdentifier(prop.Name, prop.PropertyType, prop))
                 {
                     IdentifierFieldsAndProps.Add(prop.Name);
                 }
             }
-
-            var values = Expression.Parameter(typeof(IDictionary<string, object>));
-            var premapped = Expression.Parameter(typeof(List<object>));
-
-            var newType = Expression.New(type);
         }
     }
 }

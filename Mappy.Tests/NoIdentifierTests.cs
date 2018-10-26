@@ -30,7 +30,7 @@ namespace Mappy.Tests
             person2.FirstName = person2FirstName;
             person2.LastName = person2LastName;
 
-            var list = new List<dynamic> { person1, person2 };
+            var list = new List<dynamic> {person1, person2};
 
             var mappy = new Mappy();
 

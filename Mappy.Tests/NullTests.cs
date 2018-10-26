@@ -28,11 +28,11 @@ namespace Mappy.Tests
             const string lastName = "Smith";
 
             var dictionary = new Dictionary<string, object>
-                {
-                    { "Id", id },
-                    { "FirstName", null },
-                    { "LastName", lastName }
-                };
+            {
+                {"Id", id},
+                {"FirstName", null},
+                {"LastName", lastName}
+            };
 
             var mappy = new Mappy();
 

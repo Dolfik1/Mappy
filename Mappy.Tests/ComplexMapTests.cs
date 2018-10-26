@@ -32,11 +32,9 @@ namespace Mappy.Tests
         {
             public class CustomerWithMultipleIdAttributes
             {
-                [Id]
-                public int Customer_Id;
+                [Id] public int Customer_Id;
 
-                [Id]
-                public string Customer_Type;
+                [Id] public string Customer_Type;
 
                 public string FirstName;
 
@@ -93,13 +91,13 @@ namespace Mappy.Tests
             const decimal orderTotal = 50.50m;
 
             var dictionary = new Dictionary<string, object>
-                                 {
-                                     { "Id", id },
-                                     { "FirstName", firstName },
-                                     { "LastName", lastName },
-                                     { "Orders_Id", orderId },
-                                     { "Orders_OrderTotal", orderTotal }
-                                 };
+            {
+                {"Id", id},
+                {"FirstName", firstName},
+                {"LastName", lastName},
+                {"Orders_Id", orderId},
+                {"Orders_OrderTotal", orderTotal}
+            };
 
             var mappy = new Mappy();
 
@@ -140,24 +138,24 @@ namespace Mappy.Tests
             const decimal orderTotal = 50.50m;
 
             var dictionary = new Dictionary<string, object>
-                                 {
-                                     { "Id", id },
-                                     { "FirstName", firstName },
-                                     { "LastName", lastName },
-                                     { "Orders_Id", orderId },
-                                     { "Orders_OrderTotal", orderTotal }
-                                 };
+            {
+                {"Id", id},
+                {"FirstName", firstName},
+                {"LastName", lastName},
+                {"Orders_Id", orderId},
+                {"Orders_OrderTotal", orderTotal}
+            };
 
             var dictionary2 = new Dictionary<string, object>
-                                 {
-                                     { "Id", id },
-                                     { "FirstName", firstName },
-                                     { "LastName", lastName },
-                                     { "Orders_Id", orderId + 1 },
-                                     { "Orders_OrderTotal", orderTotal + 1 }
-                                 };
+            {
+                {"Id", id},
+                {"FirstName", firstName},
+                {"LastName", lastName},
+                {"Orders_Id", orderId + 1},
+                {"Orders_OrderTotal", orderTotal + 1}
+            };
 
-            var listOfDictionaries = new List<Dictionary<string, object>> { dictionary, dictionary2 };
+            var listOfDictionaries = new List<Dictionary<string, object>> {dictionary, dictionary2};
 
             var mappy = new Mappy();
 
@@ -191,24 +189,24 @@ namespace Mappy.Tests
             const decimal orderTotal = 50.50m;
 
             var dictionary = new Dictionary<string, object>
-                                 {
-                                     { "Id", id },
-                                     { "FirstName", firstName },
-                                     { "LastName", lastName },
-                                     { "Orders_Id", orderId },
-                                     { "Orders_OrderTotal", orderTotal }
-                                 };
+            {
+                {"Id", id},
+                {"FirstName", firstName},
+                {"LastName", lastName},
+                {"Orders_Id", orderId},
+                {"Orders_OrderTotal", orderTotal}
+            };
 
             var dictionary2 = new Dictionary<string, object>
-                                 {
-                                     { "Id", id },
-                                     { "FirstName", firstName },
-                                     { "LastName", lastName },
-                                     { "Orders_Id", orderId + 1 },
-                                     { "Orders_OrderTotal", orderTotal + 1 }
-                                 };
+            {
+                {"Id", id},
+                {"FirstName", firstName},
+                {"LastName", lastName},
+                {"Orders_Id", orderId + 1},
+                {"Orders_OrderTotal", orderTotal + 1}
+            };
 
-            var listOfDictionaries = new List<Dictionary<string, object>> { dictionary, dictionary2 };
+            var listOfDictionaries = new List<Dictionary<string, object>> {dictionary, dictionary2};
 
             var mappy = new Mappy();
 
@@ -233,36 +231,36 @@ namespace Mappy.Tests
             const decimal orderTotal = 50.50m;
 
             var dictionary = new Dictionary<string, object>
-                                 {
-                                     { "Customer_Id", customerId },
-                                     { "Customer_Type", customerType },
-                                     { "FirstName", firstName },
-                                     { "LastName", lastName },
-                                     { "Orders_Id", orderId },
-                                     { "Orders_OrderTotal", orderTotal }
-                                 };
+            {
+                {"Customer_Id", customerId},
+                {"Customer_Type", customerType},
+                {"FirstName", firstName},
+                {"LastName", lastName},
+                {"Orders_Id", orderId},
+                {"Orders_OrderTotal", orderTotal}
+            };
 
             var dictionary2 = new Dictionary<string, object>
-                                 {
-                                     { "Customer_Id", customerId },
-                                     { "Customer_Type", customerType },
-                                     { "FirstName", firstName },
-                                     { "LastName", lastName },
-                                     { "Orders_Id", orderId + 1 },
-                                     { "Orders_OrderTotal", orderTotal + 1 }
-                                 };
+            {
+                {"Customer_Id", customerId},
+                {"Customer_Type", customerType},
+                {"FirstName", firstName},
+                {"LastName", lastName},
+                {"Orders_Id", orderId + 1},
+                {"Orders_OrderTotal", orderTotal + 1}
+            };
 
             var dictionary3 = new Dictionary<string, object>
-                                 {
-                                     { "Customer_Id", customerId + 1 },
-                                     { "Customer_Type", customerType },
-                                     { "FirstName", firstName },
-                                     { "LastName", lastName },
-                                     { "Orders_Id", orderId + 1 },
-                                     { "Orders_OrderTotal", orderTotal + 1 }
-                                 };
+            {
+                {"Customer_Id", customerId + 1},
+                {"Customer_Type", customerType},
+                {"FirstName", firstName},
+                {"LastName", lastName},
+                {"Orders_Id", orderId + 1},
+                {"Orders_OrderTotal", orderTotal + 1}
+            };
 
-            var listOfDictionaries = new List<Dictionary<string, object>> { dictionary, dictionary2, dictionary3 };
+            var listOfDictionaries = new List<Dictionary<string, object>> {dictionary, dictionary2, dictionary3};
 
             var mappy = new Mappy();
 
@@ -280,24 +278,24 @@ namespace Mappy.Tests
         {
             // Arrange
             var dictionary = new Dictionary<string, object>
-                                 {
-                                     { "Id", 1 },
-                                     { "FirstName", "Bob" },
-                                     { "LastName", "Smith" },
-                                     { "Orders_Id", 1 },
-                                     { "Orders_OrderTotal", 50.50m }
-                                 };
+            {
+                {"Id", 1},
+                {"FirstName", "Bob"},
+                {"LastName", "Smith"},
+                {"Orders_Id", 1},
+                {"Orders_OrderTotal", 50.50m}
+            };
 
             var dictionary2 = new Dictionary<string, object>
-                                 {
-                                     { "Id", 2 },
-                                     { "FirstName", "Jane" },
-                                     { "LastName", "Doe" },
-                                     { "Orders_Id", 2 },
-                                     { "Orders_OrderTotal", 23.40m }
-                                 };
+            {
+                {"Id", 2},
+                {"FirstName", "Jane"},
+                {"LastName", "Doe"},
+                {"Orders_Id", 2},
+                {"Orders_OrderTotal", 23.40m}
+            };
 
-            var listOfDictionaries = new List<Dictionary<string, object>> { dictionary, dictionary2 };
+            var listOfDictionaries = new List<Dictionary<string, object>> {dictionary, dictionary2};
 
             var mappy = new Mappy();
             // Act
@@ -314,17 +312,17 @@ namespace Mappy.Tests
         {
             // Arrange
             var dictionary = new Dictionary<string, object>
-                                 {
-                                     { "Id", 1 },
-                                     { "FirstName", "Bob" },
-                                     { "LastName", "Smith" },
-                                     { "Orders_Id", 1 },
-                                     { "Orders_OrderTotal", 50.50m },
-                                     { "Orders_OrderDetails_Id", 1 },
-                                     { "Orders_OrderDetails_OrderDetailTotal", 50.50m },
-                                     { "Orders_OrderDetails_Product_Id", 546 },
-                                     { "Orders_OrderDetails_Product_ProductName", "Black Bookshelf" }
-                                 };
+            {
+                {"Id", 1},
+                {"FirstName", "Bob"},
+                {"LastName", "Smith"},
+                {"Orders_Id", 1},
+                {"Orders_OrderTotal", 50.50m},
+                {"Orders_OrderDetails_Id", 1},
+                {"Orders_OrderDetails_OrderDetailTotal", 50.50m},
+                {"Orders_OrderDetails_Product_Id", 546},
+                {"Orders_OrderDetails_Product_ProductName", "Black Bookshelf"}
+            };
 
             var mappy = new Mappy();
 
@@ -342,30 +340,30 @@ namespace Mappy.Tests
         {
             // Arrange
             var dictionary = new Dictionary<string, object>
-                                 {
-                                     { "CustomerId", 1 },
-                                     { "FirstName", "Bob" },
-                                     { "LastName", "Smith" },
-                                     { "Orders_OrderId", 1 },
-                                     { "Orders_OrderTotal", 50.50m },
+            {
+                {"CustomerId", 1},
+                {"FirstName", "Bob"},
+                {"LastName", "Smith"},
+                {"Orders_OrderId", 1},
+                {"Orders_OrderTotal", 50.50m},
 
-                                     { "Orders_OrderDetails_OrderDetailId", 1 },
-                                     { "Orders_OrderDetails_OrderDetailTotal", 25.00m }
-                                 };
+                {"Orders_OrderDetails_OrderDetailId", 1},
+                {"Orders_OrderDetails_OrderDetailTotal", 25.00m}
+            };
 
             var dictionary2 = new Dictionary<string, object>
-                                 {
-                                     { "CustomerId", 1 },
-                                     { "FirstName", "Bob" },
-                                     { "LastName", "Smith" },
-                                     { "Orders_OrderId", 1 },
-                                     { "Orders_OrderTotal", 50.50m },
+            {
+                {"CustomerId", 1},
+                {"FirstName", "Bob"},
+                {"LastName", "Smith"},
+                {"Orders_OrderId", 1},
+                {"Orders_OrderTotal", 50.50m},
 
-                                     { "Orders_OrderDetails_OrderDetailId", 2 },
-                                     { "Orders_OrderDetails_OrderDetailTotal", 25.50m }
-                                 };
+                {"Orders_OrderDetails_OrderDetailId", 2},
+                {"Orders_OrderDetails_OrderDetailTotal", 25.50m}
+            };
 
-            var list = new List<IDictionary<string, object>> { dictionary, dictionary2 };
+            var list = new List<IDictionary<string, object>> {dictionary, dictionary2};
 
             var mappy = new Mappy();
 

@@ -35,7 +35,7 @@ namespace Mappy.Tests
             dynamicCustomer2.Emails_Id = "2";
             dynamicCustomer2.Emails_Name = "c@c.com";
 
-            var list = new List<dynamic> { dynamicCustomer, dynamicCustomer2 };
+            var list = new List<dynamic> {dynamicCustomer, dynamicCustomer2};
 
             var mappy = new Mappy();
             var customer = mappy.Map<NameValue>(list)

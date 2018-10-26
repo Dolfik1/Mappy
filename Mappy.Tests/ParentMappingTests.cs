@@ -51,7 +51,7 @@ namespace Mappy.Tests
             dynamicCustomer2.Addresses_State = "New York ";
             dynamicCustomer2.Addresses_ZipCode = "10012";
 
-            var list = new List<dynamic> { dynamicCustomer, dynamicCustomer2 };
+            var list = new List<dynamic> {dynamicCustomer, dynamicCustomer2};
 
             var mappy = new Mappy();
             var customer = mappy.Map<Customer>(list)
