@@ -1,8 +1,8 @@
 # Mappy
 Slapper compatible object mapper
 
-### Benchmarks:
-
+## Benchmarks:
+#### Simple
 ```
                           Method |      Mean |     Error |    StdDev |
 -------------------------------- |----------:|----------:|----------:|
@@ -12,7 +12,7 @@ Slapper compatible object mapper
  MappyBenchmarkBaseConverterOnly | 144.54 ms | 2.4099 ms | 2.2543 ms |
                 SlapperBenchmark | 594.19 ms | 0.9983 ms | 0.9338 ms |
 ```
-
+#### Complex
 ```
                           Method |       Mean |    Error |   StdDev |
 -------------------------------- |-----------:|---------:|---------:|
