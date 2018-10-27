@@ -7,7 +7,7 @@ namespace Mappy.Benchmark
         static void Main(string[] args)
         {
             BenchmarkRunner.Run<SimpleMap>(new AllowNonOptimized());
-            BenchmarkRunner.Run<ComplexMap>(new AllowNonOptimized());
+            //BenchmarkRunner.Run<ComplexMap>(new AllowNonOptimized());
         }
     }
 }

@@ -11,17 +11,18 @@ namespace Mappy
 {
     public class TypeMap<T> : TypeMap
     {
-        internal Func<string, IEnumerable<Items>, Items, T> MapExpression { get; }
+        internal Func<string, IEnumerable<Items>, Items, MappyOptions, T> MapExpression { get; }
 
-        internal TypeMap(MappyOptions options)
-            : base(typeof(T), options)
+        internal TypeMap()
+            : base(typeof(T))
         {
             var type = typeof(T);
 
             var prefix = Expression.Parameter(typeof(string));
             var values = Expression.Parameter(typeof(IEnumerable<Items>));
             var first = Expression.Parameter(typeof(Items));
-
+            var options = Expression.Parameter(typeof(MappyOptions));
+            
             var newValue = Expression.New(type);
 
             var bindings = new List<MemberBinding>();
@@ -44,6 +45,7 @@ namespace Mappy
                                 && !underlyingType.IsPrimitive 
                                 && !underlyingType.IsValueType;
 
+                var nullableType = Nullable.GetUnderlyingType(propOrFieldType);
 
                 MethodInfo convertMethod;
                 const BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Static;
@@ -52,15 +54,21 @@ namespace Mappy
                     convertMethod = typeof(ConvertUtility).GetMethod(
                         nameof(ConvertUtility.ConvertList), flags);
                 }
+                else if (nullableType != null)
+                {
+                    convertMethod = typeof(ConvertUtility).GetMethod(
+                        nameof(ConvertUtility.ConvertNullable), flags);
+                    underlyingType = nullableType;
+                }
                 else
                 {
                     convertMethod = typeof(ConvertUtility).GetMethod(
                         nameof(ConvertUtility.Convert), flags);
                 }
-
+                
                 var convertCall = Expression.Call(
-                    convertMethod.MakeGenericMethod(new[] { underlyingType }),
-                    Expression.Constant(options),
+                    convertMethod.MakeGenericMethod(underlyingType),
+                    options,
                     prefix,
                     Expression.Constant(propOrFieldName),
                     Expression.Constant(isComplex),
@@ -83,27 +91,29 @@ namespace Mappy
             var member = Expression.MemberInit(newValue, bindings);
 
 
-            MapExpression = Expression.Lambda<Func<string, IEnumerable<Items>, Items, T>>(
-                member, prefix, values, first).Compile();
+            MapExpression = Expression.Lambda<Func<string, IEnumerable<Items>, Items, MappyOptions, T>>(
+                member, prefix, values, first, options).Compile();
         }
 
         internal T Map(
             string prefix,
-            IEnumerable<Items> values)
+            IEnumerable<Items> values,
+            MappyOptions options)
         {
-            return MapExpression(prefix, values, values.First());
+            return MapExpression(prefix, values, values.First(), options);
         }
 
-        internal T MapSingle(Items values)
+        internal T MapSingle(Items values, MappyOptions options)
         {
-            return Map("", new List<Items> { values });
+            return Map("", new List<Items> { values }, options);
         }
 
         internal IEnumerable<T> MapEnumerable(
-            IEnumerable<Items> values)
+            IEnumerable<Items> values,
+            MappyOptions options)
         {
             return ConvertUtility.ConvertList<T>(
-                Options,
+                options,
                 "",
                 "",
                 true,
@@ -112,7 +122,9 @@ namespace Mappy
         }
 
 
-        internal int GetIdentifierHashCode(string prefix, Items items)
+        internal int GetIdentifierHashCode(
+            string prefix,
+            Items items)
         {
             if (IdentifierFieldsAndProps.Count == 0)
             {
@@ -136,11 +148,14 @@ namespace Mappy
             return HashCode.CombineHashCodes(HashCodes());
         }
 
-        internal bool HasValues(string prefix, Items items)
+        internal bool HasValues(
+            string prefix,
+            Items items,
+            MappyOptions options)
         {
             return items
                 .Any(x => 
-                    x.Key.StartsWith(prefix, Options.StringComparison)
+                    x.Key.StartsWith(prefix, options.StringComparison)
                     && x.Value != null);
         }
     }

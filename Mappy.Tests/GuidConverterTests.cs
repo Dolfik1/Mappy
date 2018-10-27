@@ -14,12 +14,5 @@ namespace Mappy.Tests
             // Act + Assert
             Assert.True(_converter.CanConvert<Guid>(null)); // Input value does not matter, null is enough for the test.
         }
-        
-        [Fact]
-        public void Can_Convert_To_Type_Nullable()
-        {
-            // Act + Assert
-            Assert.True(_converter.CanConvert<Guid?>(null)); // Input value does not matter, null is enough for the test.
-        }
     }
 }

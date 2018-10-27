@@ -6,13 +6,13 @@ using ItemsEnumerable = System.Collections.Generic.IEnumerable<System.Collection
 
 namespace Mappy
 {
-    public struct Mappy
+    public class Mappy
     {
         private MappyOptions _options { get; set; }
 
-        public Mappy(MappyOptions options)
+        public Mappy(MappyOptions options = null)
         {
-            _options = options;
+            _options = options ?? MappyOptions.Default;
         }
 
         public IEnumerable<T> Map<T>(
@@ -60,6 +60,27 @@ namespace Mappy
                 .SingleOrDefault();
         }
 
+        public IEnumerable<T> Map<T>(
+            ItemsEnumerable items)
+        {
+            return Map<T>(items, _options);
+        }
+
+        public IEnumerable<T> Map<T>(
+            ItemsEnumerable items,
+            MappyOptions options)
+        {
+            return Map<T>(items, options, null);
+        }
+
+        public IEnumerable<T> Map<T>(
+            ItemsEnumerable items,
+            MappyOptions options,
+            Abbrs abbreviations)
+        {
+            return MapInternal<T>(items, options, abbreviations);
+        }
+
         internal IEnumerable<T> MapInternal<T>(
             IEnumerable<dynamic> items,
             MappyOptions options,
@@ -78,19 +99,18 @@ namespace Mappy
             MappyOptions options,
             Abbrs abbreviations)
         {
-            var def = default(MappyOptions);
-            if (_options.Equals(def))
+            if (_options == null)
             {
                 _options = MappyOptions.Default;
             }
 
-            if (options.Equals(def))
+            if (options == null)
             {
                 options = _options;
             }
 
-            return options.Cache.GetOrCreateTypeMap<T>(options)
-                .MapEnumerable(items);
+            return options.Cache.GetOrCreateTypeMap<T>()
+                .MapEnumerable(items, options);
         }
     }
 }

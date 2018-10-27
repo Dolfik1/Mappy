@@ -9,13 +9,9 @@ namespace Mappy
     {
         internal HashSet<string> FieldsAndProps { get; }
         internal HashSet<string> IdentifierFieldsAndProps { get; }
-        internal MappyOptions Options { get; }
 
-        internal TypeMap(
-            Type type,
-            MappyOptions options)
+        internal TypeMap(Type type)
         {
-            Options = options;
             IdentifierFieldsAndProps = new HashSet<string>();
             FieldsAndProps = new HashSet<string>();
 

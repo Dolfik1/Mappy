@@ -40,9 +40,7 @@ namespace Mappy.Converters
         /// <returns>Boolean response.</returns>
         public bool CanConvert<T>(object value)
         {
-            var type = typeof(T);
-            var conversionType = Nullable.GetUnderlyingType(type) ?? type;
-            return conversionType == typeof(Guid);
+            return typeof(T) == typeof(Guid);
         }
 
         /// <summary>

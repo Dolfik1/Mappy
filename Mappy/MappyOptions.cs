@@ -1,12 +1,11 @@
-﻿using Mappy.Utils;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Mappy.Converters;
 
 namespace Mappy
 {
-    public struct MappyOptions
+    public class MappyOptions
     {
         public string Delimiter { get; }
         public Type IdAttributeType { get; }
@@ -49,13 +48,5 @@ namespace Mappy
         }
 
         public static MappyOptions Default = new MappyOptions(delimiter: "_");
-
-        public override int GetHashCode()
-        {
-            return HashCode.CombineHashCodes(
-                Delimiter.GetHashCode(),
-                IdAttributeType.GetHashCode(),
-                StringComparison.GetHashCode());
-        }
     }
 }

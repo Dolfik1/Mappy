@@ -6,10 +6,10 @@ namespace Mappy.Converters
         {
             if (value == null) return default(T);
             
-            var tp = typeof(T);
-            if (value.GetType() != tp)
+            var type = typeof(T);
+            if (value.GetType() != type)
             {
-                return (T)System.Convert.ChangeType(value, tp);
+                return (T)System.Convert.ChangeType(value, type);
             }
             return (T)value;
 

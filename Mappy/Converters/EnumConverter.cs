@@ -23,10 +23,7 @@ namespace Mappy.Converters
             }
             
             var type = typeof(T);
-            // Handle Nullable types
-            var conversionType = Nullable.GetUnderlyingType(type) ?? type;
-
-            return (T)Enum.Parse(conversionType, value.ToString());
+            return (T)Enum.Parse(type, value.ToString());
         }
 
         /// <summary>
@@ -37,9 +34,7 @@ namespace Mappy.Converters
         /// <returns>Boolean response.</returns>
         public bool CanConvert<T>(object value)
         {
-            var type = typeof(T);
-            var conversionType = Nullable.GetUnderlyingType(type) ?? type;
-            return conversionType.IsEnum;
+            return typeof(T).IsEnum;
         }
 
         /// <summary>

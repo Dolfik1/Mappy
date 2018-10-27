@@ -1,5 +1,4 @@
-﻿using Mappy.Utils;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 
 namespace Mappy
 {
@@ -8,14 +7,11 @@ namespace Mappy
         private readonly ConcurrentDictionary<int, TypeMap> _typeMaps
             = new ConcurrentDictionary<int, TypeMap>();
 
-        public TypeMap<T> GetOrCreateTypeMap<T>(MappyOptions options)
+        public TypeMap<T> GetOrCreateTypeMap<T>()
         {
-            var type = typeof(T);
-            var hash = HashCode.CombineHashCodes(
-                type.GetHashCode(),
-                options.GetHashCode());
+            var hash = typeof(T).GetHashCode();
 
-            return _typeMaps.GetOrAdd(hash, _ => new TypeMap<T>(options))
+            return _typeMaps.GetOrAdd(hash, _ => new TypeMap<T>())
                 as TypeMap<T>;
         }
     }

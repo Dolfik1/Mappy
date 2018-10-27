@@ -23,11 +23,7 @@ namespace Mappy.Converters
             }
             
             var type = typeof(T);
-            // Handle Nullable types
-            var conversionType = Nullable.GetUnderlyingType(type) ?? type;
-
-            var convertedValue = System.Convert.ChangeType(value, conversionType);
-
+            var convertedValue = System.Convert.ChangeType(value, type);
             return (T)convertedValue;
         }
 

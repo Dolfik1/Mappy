@@ -34,6 +34,46 @@ namespace Mappy.Benchmark
         }
 
         [Benchmark]
+        public void GroupByBenchmark()
+        {
+            GenerateData(Iterations)
+                .GroupBy(x => x["CustomerId"])
+                .Select(x =>
+                {
+                    var first = x.First();
+                    return new Customer
+                    {
+                        CustomerId = (int) first["CustomerId"],
+                        FirstName = (string) first["FirstName"],
+                        LastName = (string) first["LastName"],
+                        Orders = x
+                            .GroupBy(o => o["Orders_OrderId"])
+                            .Select(o =>
+                            {
+                                var firstOrder = o.First();
+                                return new Order
+                                {
+                                    OrderId = (int) firstOrder["Orders_OrderId"],
+                                    OrderTotal = (decimal) firstOrder["Orders_OrderTotal"],
+                                    OrderDetails = o
+                                        .GroupBy(d => d["Orders_OrderDetails_OrderDetailId"])
+                                        .Select(d =>
+                                        {
+                                            var firstDetail = d.First();
+                                            return new OrderDetail
+                                            {
+                                                OrderDetailId = (int) firstDetail["Orders_OrderDetails_OrderDetailId"],
+                                                OrderDetailTotal = (decimal) firstDetail["Orders_OrderDetails_OrderDetailTotal"]
+                                            };
+                                        }).ToList()
+                                };
+                            }).ToList()
+                    };
+                })
+                .ToList();
+        }
+
+        [Benchmark]
         public void MappyBenchmark()
         {
             Mappy.Map<Customer>(GenerateData(Iterations))

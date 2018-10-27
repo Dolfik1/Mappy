@@ -34,6 +34,37 @@ namespace Mappy.Benchmark
         }
 
         [Benchmark]
+        public void StraightBenchmark()
+        {
+            GenerateData(Iterations)
+                .Select(x => new Customer
+                {
+                    CustomerId = (int) x["CustomerId"],
+                    FirstName = (string) x["FirstName"],
+                    LastName = (string) x["LastName"]
+                })
+                .ToList();
+        }
+
+        [Benchmark]
+        public void GroupByBenchmark()
+        {
+            GenerateData(Iterations)
+                .GroupBy(x => x["CustomerId"])
+                .Select(x =>
+                {
+                    var first = x.First();
+                    return new Customer
+                    {
+                        CustomerId = (int) first["CustomerId"],
+                        FirstName = (string) first["FirstName"],
+                        LastName = (string) first["LastName"]
+                    };
+                })
+                .ToList();
+        }
+
+        [Benchmark]
         public void MappyBenchmark()
         {
             Mappy.Map<Customer>(GenerateData(Iterations))
