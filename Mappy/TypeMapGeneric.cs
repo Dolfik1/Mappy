@@ -11,21 +11,19 @@ namespace Mappy
 {
     public class TypeMap<T> : TypeMap
     {
-        internal Func<string, IEnumerable<Items>, Items, MappyOptions, T> MapExpression { get; }
+        internal Func<MappingContext, string, IEnumerable<Items>, Items, T> MapExpression { get; }
 
         internal TypeMap(Type idAttribute)
             : base(typeof(T), idAttribute)
         {
             var type = typeof(T);
 
+            var context = Expression.Parameter(typeof(MappingContext));
             var prefix = Expression.Parameter(typeof(string));
             var values = Expression.Parameter(typeof(IEnumerable<Items>));
             var first = Expression.Parameter(typeof(Items));
-            var options = Expression.Parameter(typeof(MappyOptions));
 
             var newValue = Expression.New(type);
-
-            var bindings = new List<MemberBinding>();
 
             MemberBinding Process(
                 string propOrFieldName,
@@ -47,46 +45,55 @@ namespace Mappy
                         : propOrFieldType.GetGenericArguments()[0];
                 }
 
+                if (underlyingType == null)
+                {
+                    throw new Exception("Can't detect type.");
+                }
+                
                 var isComplex = underlyingType.Namespace != "System"
                                 && !underlyingType.IsPrimitive
                                 && !underlyingType.IsValueType;
 
                 var nullableType = Nullable.GetUnderlyingType(propOrFieldType);
 
-                MethodInfo convertMethod;
-                const BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Static;
                 string methodName;
 
                 if (isArray)
                 {
                     methodName = isComplex
-                        ? nameof(ConvertUtility.ConvertArrayComplex)
-                        : nameof(ConvertUtility.ConvertArray);
+                        ? nameof(MappingContext.ConvertArrayComplex)
+                        : nameof(MappingContext.ConvertArray);
                 }
                 else if (isEnumerable)
                 {
                     methodName = isComplex
-                        ? nameof(ConvertUtility.ConvertListComplex)
-                        : nameof(ConvertUtility.ConvertList);
+                        ? nameof(MappingContext.ConvertListComplex)
+                        : nameof(MappingContext.ConvertList);
                 }
                 else if (nullableType != null)
                 {
                     methodName = isComplex
-                        ? nameof(ConvertUtility.ConvertNullableComplex)
-                        : nameof(ConvertUtility.ConvertNullable);
+                        ? nameof(MappingContext.ConvertNullableComplex)
+                        : nameof(MappingContext.ConvertNullable);
                     underlyingType = nullableType;
                 }
                 else
                 {
                     methodName = isComplex
-                        ? nameof(ConvertUtility.ConvertComplex)
-                        : nameof(ConvertUtility.Convert);
+                        ? nameof(MappingContext.ConvertComplex)
+                        : nameof(MappingContext.Convert);
                 }
-                convertMethod = typeof(ConvertUtility).GetMethod(methodName, flags);
+                var convertMethod = typeof(MappingContext).GetMethod(
+                    methodName, BindingFlags.Instance | BindingFlags.NonPublic);
+
+                if (convertMethod == null)
+                {
+                    throw new Exception($"Convert method with name \"{methodName}\" does not found.");
+                }
 
                 var convertCall = Expression.Call(
+                    context,
                     convertMethod.MakeGenericMethod(underlyingType),
-                    options,
                     prefix,
                     Expression.Constant(propOrFieldName),
                     first,
@@ -95,42 +102,38 @@ namespace Mappy
                 return Expression.Bind(mi, convertCall);
             }
 
-            foreach (var property in GetProperties(type))
-            {
-                bindings.Add(Process(property.Name, property.PropertyType, property));
-            }
-
-            foreach (var field in GetFields(type))
-            {
-                bindings.Add(Process(field.Name, field.FieldType, field));
-            }
+            var bindings = GetProperties(type)
+                .Select(property => Process(property.Name, property.PropertyType, property))
+                .ToList();
+            
+            bindings.AddRange(GetFields(type)
+                .Select(field => Process(field.Name, field.FieldType, field)));
 
             var member = Expression.MemberInit(newValue, bindings);
 
 
-            MapExpression = Expression.Lambda<Func<string, IEnumerable<Items>, Items, MappyOptions, T>>(
-                member, prefix, values, first, options).Compile();
+            MapExpression = Expression.Lambda<Func<MappingContext, string, IEnumerable<Items>, Items, T>>(
+                member, context, prefix, values, first).Compile();
         }
 
         internal T Map(
+            MappingContext context,
             string prefix,
-            IEnumerable<Items> values,
-            MappyOptions options)
+            IEnumerable<Items> values)
         {
-            return MapExpression(prefix, values, values.First(), options);
+            return MapExpression(context, prefix, values, values.First());
         }
 
-        internal T MapSingle(Items values, MappyOptions options)
+        internal T MapSingle(MappingContext context, Items values, MappyOptions options)
         {
-            return Map("", new List<Items> { values }, options);
+            return Map(context, "", new List<Items> { values });
         }
 
         internal IEnumerable<T> MapEnumerable(
             IEnumerable<Items> values,
-            MappyOptions options)
+            MappingContext context)
         {
-            return ConvertUtility.ConvertListComplex<T>(
-                options,
+            return context.ConvertListComplex<T>(
                 "",
                 "",
                 null,
