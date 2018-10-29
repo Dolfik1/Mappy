@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Dynamic;
 using Xunit;
 
-namespace Mappy.Tests
+namespace Mappy.Tests.Slapper
 {
     public class MappingToEnumTests
     {

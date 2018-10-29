@@ -82,12 +82,12 @@ namespace Mappy
                 return Expression.Bind(mi, convertCall);
             }
 
-            foreach (var property in type.GetProperties())
+            foreach (var property in GetProperties(type))
             {
                 bindings.Add(Process(property.Name, property.PropertyType, property));
             }
 
-            foreach (var field in type.GetFields())
+            foreach (var field in GetFields(type))
             {
                 bindings.Add(Process(field.Name, field.FieldType, field));
             }

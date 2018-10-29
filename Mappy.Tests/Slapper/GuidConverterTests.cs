@@ -2,7 +2,7 @@ using System;
 using Mappy.Converters;
 using Xunit;
 
-namespace Mappy.Tests
+namespace Mappy.Tests.Slapper
 {
     public class GuidConverterTests
     {

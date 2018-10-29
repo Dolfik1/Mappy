@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using Xunit;
 
-namespace Mappy.Tests
+namespace Mappy.Tests.Slapper
 {
     public class SimpleTypeConversionTests
     {
@@ -37,7 +37,7 @@ namespace Mappy.Tests
             };
 
             var mappy = new Mappy();
-            
+
             // Act
             var customer = mappy.Map<PersonWithFields>(dictionary);
 
@@ -62,9 +62,9 @@ namespace Mappy.Tests
                 {"FirstName", firstName},
                 {"LastName", lastName}
             };
-            
+
             var mappy = new Mappy();
-            
+
             // Act
             var customer = mappy.Map<PersonWithProperties>(dictionary);
 

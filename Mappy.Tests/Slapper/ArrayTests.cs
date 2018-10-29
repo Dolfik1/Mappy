@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Xunit;
 
-namespace Mappy.Tests
+namespace Mappy.Tests.Slapper
 {
     public class ArrayTests
     {
@@ -58,7 +58,7 @@ namespace Mappy.Tests
             const int id = 1;
             const string firstName = null;
             const string lastName = "Smith";
-            string[] favoriteFoods = new[] {"Ice Cream", "Jello"};
+            string[] favoriteFoods = new[] { "Ice Cream", "Jello" };
 
             var dictionary = new Dictionary<string, object>
             {

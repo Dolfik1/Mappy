@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Xunit;
 
-namespace Mappy.Tests
+namespace Mappy.Tests.Slapper
 {
     public class NullTests
     {

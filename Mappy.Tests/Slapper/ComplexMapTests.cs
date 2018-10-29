@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using Xunit;
 
-namespace Mappy.Tests
+namespace Mappy.Tests.Slapper
 {
     public class ComplexMapTests
     {

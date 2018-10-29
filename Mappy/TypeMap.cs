@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
+using System.Linq;
 using System.Reflection;
 
 namespace Mappy
@@ -25,7 +25,7 @@ namespace Mappy
                     || mi.GetCustomAttribute<IdAttribute>(true) != null;
             }
 
-            foreach (var field in type.GetFields())
+            foreach (var field in GetFields(type))
             {
                 FieldsAndProps.Add(field.Name);
                 if (IsIdentifier(field.Name, field.FieldType, field))
@@ -34,7 +34,7 @@ namespace Mappy
                 }
             }
 
-            foreach (var prop in type.GetProperties())
+            foreach (var prop in GetProperties(type))
             {
                 FieldsAndProps.Add(prop.Name);
                 if (IsIdentifier(prop.Name, prop.PropertyType, prop))
@@ -42,6 +42,18 @@ namespace Mappy
                     IdentifierFieldsAndProps.Add(prop.Name);
                 }
             }
+        }
+
+        internal IEnumerable<FieldInfo> GetFields(Type type)
+        {
+            return type.GetFields();
+        }
+
+        internal IEnumerable<PropertyInfo> GetProperties(Type type)
+        {
+            return type
+                .GetProperties()
+                .Where(x => x.CanWrite);
         }
     }
 }

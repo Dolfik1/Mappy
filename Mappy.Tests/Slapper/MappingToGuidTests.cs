@@ -2,7 +2,7 @@ using System;
 using System.Dynamic;
 using Xunit;
 
-namespace Mappy.Tests
+namespace Mappy.Tests.Slapper
 {
     public class MappingToGuidTests
     {
