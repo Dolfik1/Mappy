@@ -22,7 +22,7 @@ namespace Mappy
             var values = Expression.Parameter(typeof(IEnumerable<Items>));
             var first = Expression.Parameter(typeof(Items));
             var options = Expression.Parameter(typeof(MappyOptions));
-            
+
             var newValue = Expression.New(type);
 
             var bindings = new List<MemberBinding>();
@@ -42,36 +42,40 @@ namespace Mappy
                 }
 
                 var isComplex = underlyingType.Namespace != "System"
-                                && !underlyingType.IsPrimitive 
+                                && !underlyingType.IsPrimitive
                                 && !underlyingType.IsValueType;
 
                 var nullableType = Nullable.GetUnderlyingType(propOrFieldType);
 
                 MethodInfo convertMethod;
                 const BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Static;
+                string methodName;
                 if (isEnumerable)
                 {
-                    convertMethod = typeof(ConvertUtility).GetMethod(
-                        nameof(ConvertUtility.ConvertList), flags);
+                    methodName = isComplex
+                        ? nameof(ConvertUtility.ConvertListComplex)
+                        : nameof(ConvertUtility.ConvertList);
                 }
                 else if (nullableType != null)
                 {
-                    convertMethod = typeof(ConvertUtility).GetMethod(
-                        nameof(ConvertUtility.ConvertNullable), flags);
+                    methodName = isComplex
+                        ? nameof(ConvertUtility.ConvertNullableComplex)
+                        : nameof(ConvertUtility.ConvertNullable);
                     underlyingType = nullableType;
                 }
                 else
                 {
-                    convertMethod = typeof(ConvertUtility).GetMethod(
-                        nameof(ConvertUtility.Convert), flags);
+                    methodName = isComplex
+                        ? nameof(ConvertUtility.ConvertComplex)
+                        : nameof(ConvertUtility.Convert);
                 }
-                
+                convertMethod = typeof(ConvertUtility).GetMethod(methodName, flags);
+
                 var convertCall = Expression.Call(
                     convertMethod.MakeGenericMethod(underlyingType),
                     options,
                     prefix,
                     Expression.Constant(propOrFieldName),
-                    Expression.Constant(isComplex),
                     first,
                     values);
 
@@ -112,11 +116,10 @@ namespace Mappy
             IEnumerable<Items> values,
             MappyOptions options)
         {
-            return ConvertUtility.ConvertList<T>(
+            return ConvertUtility.ConvertListComplex<T>(
                 options,
                 "",
                 "",
-                true,
                 null,
                 values);
         }
@@ -154,7 +157,7 @@ namespace Mappy
             MappyOptions options)
         {
             return items
-                .Any(x => 
+                .Any(x =>
                     x.Key.StartsWith(prefix, options.StringComparison)
                     && x.Value != null);
         }

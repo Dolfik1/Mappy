@@ -10,40 +10,13 @@ namespace Mappy.Utils
             MappyOptions options,
             string prefix,
             string name,
-            bool isComplexType,
             Items items,
-            IEnumerable<Items> values) 
+            IEnumerable<Items> values)
             where T : struct
         {
-            if (isComplexType)
-            {
-                var pfx = string.IsNullOrEmpty(prefix)
-                          && string.IsNullOrEmpty(name) ? ""
-                    : prefix + name + options.Delimiter;
-
-                if (!items
-                    .Any(x => x.Key.StartsWith(pfx, options.StringComparison)))
-                {
-                    return default(T?);
-                }
-
-                var mapper = options.Cache
-                    .GetOrCreateTypeMap<T>();
-                
-                
-                if (!mapper.HasValues(pfx, items, options))
-                {
-                    return default(T?);
-                }
-
-                return options.Cache
-                    .GetOrCreateTypeMap<T?>()
-                    .Map(pfx, values, options);
-            }
-
-            if (!items.TryGetValue(prefix + name, out var value) || value == null) 
+            if (!items.TryGetValue(prefix + name, out var value) || value == null)
                 return default(T?);
-            
+
             foreach (var converter in options.Converters)
             {
                 if (converter.CanConvert<T>(value))
@@ -54,44 +27,46 @@ namespace Mappy.Utils
 
             return default(T?);
         }
-        
+        internal static T? ConvertNullableComplex<T>(
+            MappyOptions options,
+            string prefix,
+            string name,
+            Items items,
+            IEnumerable<Items> values)
+            where T : struct
+        {
+            var pfx = string.IsNullOrEmpty(prefix)
+                      && string.IsNullOrEmpty(name) ? ""
+                : prefix + name + options.Delimiter;
+
+            if (!items
+                .Any(x => x.Key.StartsWith(pfx, options.StringComparison)))
+            {
+                return default(T?);
+            }
+
+            var mapper = options.Cache
+                .GetOrCreateTypeMap<T>();
+
+
+            if (!mapper.HasValues(pfx, items, options))
+            {
+                return default(T?);
+            }
+
+            return mapper.Map(pfx, values, options);
+        }
+
         internal static T Convert<T>(
             MappyOptions options,
             string prefix,
             string name,
-            bool isComplexType,
             Items items,
             IEnumerable<Items> values)
         {
-            if (isComplexType)
-            {
-                var pfx = string.IsNullOrEmpty(prefix)
-                    && string.IsNullOrEmpty(name) ? ""
-                    : prefix + name + options.Delimiter;
-
-                if (!items
-                    .Any(x => x.Key.StartsWith(pfx, options.StringComparison)))
-                {
-                    return default(T);
-                }
-
-                var mapper = options.Cache
-                    .GetOrCreateTypeMap<T>();
-                
-                
-                if (!mapper.HasValues(pfx, items, options))
-                {
-                    return default(T);
-                }
-
-                return options.Cache
-                    .GetOrCreateTypeMap<T>()
-                    .Map(pfx, values, options);
-            }
-
-            if (!items.TryGetValue(prefix + name, out var value) || value == null) 
+            if (!items.TryGetValue(prefix + name, out var value) || value == null)
                 return default(T);
-            
+
             foreach (var converter in options.Converters)
             {
                 if (converter.CanConvert<T>(value))
@@ -103,11 +78,10 @@ namespace Mappy.Utils
             return default(T);
         }
 
-        internal static List<T> ConvertList<T>(
+        internal static T ConvertComplex<T>(
             MappyOptions options,
             string prefix,
             string name,
-            bool isComplexType,
             Items items,
             IEnumerable<Items> values)
         {
@@ -115,16 +89,35 @@ namespace Mappy.Utils
                 && string.IsNullOrEmpty(name) ? ""
                 : prefix + name + options.Delimiter;
 
-            
-
-            if (!isComplexType)
+            if (!items
+                .Any(x => x.Key.StartsWith(pfx, options.StringComparison)))
             {
-                return values
-                    .Where(x => x != null)
-                    .Select(x => Convert<T>(options, pfx, options.PrimitiveCollectionSign, false, x, null))
-                    .ToList();
+                return default(T);
             }
-            
+
+            var mapper = options.Cache
+                .GetOrCreateTypeMap<T>();
+
+
+            if (!mapper.HasValues(pfx, items, options))
+            {
+                return default(T);
+            }
+
+            return mapper.Map(pfx, values, options);
+        }
+
+        internal static List<T> ConvertListComplex<T>(
+            MappyOptions options,
+            string prefix,
+            string name,
+            Items items,
+            IEnumerable<Items> values)
+        {
+            var pfx = string.IsNullOrEmpty(prefix)
+                && string.IsNullOrEmpty(name) ? ""
+                : prefix + name + options.Delimiter;
+
             var mapper = options.Cache
                 .GetOrCreateTypeMap<T>();
 
@@ -132,6 +125,23 @@ namespace Mappy.Utils
                 .Where(x => mapper.HasValues(pfx, x, options))
                 .GroupBy(x => mapper.GetIdentifierHashCode(pfx, x))
                 .Select(x => mapper.Map(pfx, x, options))
+                .ToList();
+        }
+
+        internal static List<T> ConvertList<T>(
+            MappyOptions options,
+            string prefix,
+            string name,
+            Items items,
+            IEnumerable<Items> values)
+        {
+            var pfx = string.IsNullOrEmpty(prefix)
+                && string.IsNullOrEmpty(name) ? ""
+                : prefix + name + options.Delimiter;
+
+            return values
+                .Where(x => x != null)
+                .Select(x => Convert<T>(options, pfx, options.PrimitiveCollectionSign, x, null))
                 .ToList();
         }
     }
