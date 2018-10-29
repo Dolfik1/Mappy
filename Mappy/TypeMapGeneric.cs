@@ -124,11 +124,6 @@ namespace Mappy
             return MapExpression(context, prefix, values, values.First());
         }
 
-        internal T MapSingle(MappingContext context, Items values, MappyOptions options)
-        {
-            return Map(context, "", new List<Items> { values });
-        }
-
         internal IEnumerable<T> MapEnumerable(
             IEnumerable<Items> values,
             MappingContext context)
@@ -152,30 +147,77 @@ namespace Mappy
 
             var ids = IdentifierFieldsAndProps;
 
-            IEnumerable<int> HashCodes()
+            if (ids.Count > 8)
             {
-                foreach (var id in ids)
+
+                IEnumerable<int> HashCodes()
                 {
-                    if (!items.TryGetValue(prefix + id, out var value))
+                    foreach (var id in ids)
                     {
-                        continue;
+                        if (!items.TryGetValue(prefix + id, out var value))
+                        {
+                            continue;
+                        }
+
+                        yield return value?.GetHashCode() ?? 0;
                     }
-                    yield return value?.GetHashCode() ?? 0;
                 }
+
+                return HashCode.CombineHashCodes(HashCodes());
             }
 
-            return HashCode.CombineHashCodes(HashCodes());
+            var hashCode = 0;
+            foreach (var id in ids)
+            {
+                if (!items.TryGetValue(prefix + id, out var value))
+                {
+                    continue;
+                }
+
+                if (hashCode == 0)
+                {
+                    hashCode = value.GetHashCode();
+                }
+                else
+                {
+                    HashCode.CombineHashCodes(value.GetHashCode(), hashCode);
+                }
+            }
+                
+            return hashCode;
         }
 
         internal bool HasValues(
+            MappingContext context,
             string prefix,
             Items items,
             MappyOptions options)
-        {
-            return items
-                .Any(x =>
-                    x.Key.StartsWith(prefix, options.StringComparison)
-                    && x.Value != null);
+        {   
+            var hashCode = HashCode.CombineHashCodes(prefix.GetHashCode(), GetHashCode());            
+            if (!context.TryGetValueFields(hashCode, out var valueFields))
+            {
+                valueFields = items
+                    .Where(x => x.Key.StartsWith(prefix, options.StringComparison))
+                    .Select(x => x.Key)
+                    .ToArray();
+                
+                context.AddValueFields(hashCode, valueFields);
+            }
+
+            if (items.Count == 0)
+            {
+                return false;
+            }
+
+            foreach (var field in valueFields)
+            {
+                if (items[field] != null)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

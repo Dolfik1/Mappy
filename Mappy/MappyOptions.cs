@@ -57,38 +57,28 @@ namespace Mappy
                 .ToList();
         }
 
-        private StringComparer GetStringComparer(StringComparison comparsion)
+        private StringComparer GetStringComparer(StringComparison comparison)
         {
             var culture = CultureInfo.InvariantCulture;
-            var ignoreCase = false;
+            var ignoreCase = comparison == StringComparison.CurrentCultureIgnoreCase
+                             || comparison == StringComparison.InvariantCultureIgnoreCase
+                             || comparison == StringComparison.OrdinalIgnoreCase;
 
-            if (comparsion == StringComparison.CurrentCultureIgnoreCase
-                || comparsion == StringComparison.InvariantCultureIgnoreCase
-                || comparsion == StringComparison.OrdinalIgnoreCase)
+            switch (comparison)
             {
-                ignoreCase = true;
+                case StringComparison.CurrentCultureIgnoreCase:
+                case StringComparison.CurrentCulture:
+                    culture = CultureInfo.CurrentCulture;
+                    break;
+                case StringComparison.OrdinalIgnoreCase:
+                    return StringComparer.OrdinalIgnoreCase;
+                case StringComparison.Ordinal:
+                    return StringComparer.Ordinal;
             }
-
-            if (comparsion == StringComparison.CurrentCultureIgnoreCase
-                || comparsion == StringComparison.CurrentCulture)
-            {
-                culture = CultureInfo.CurrentCulture;
-            }
-
-            if (comparsion == StringComparison.OrdinalIgnoreCase)
-            {
-                return StringComparer.OrdinalIgnoreCase;
-            }
-            else if (comparsion == StringComparison.Ordinal)
-            {
-                return StringComparer.Ordinal;
-            }
-
-
 
             return StringComparer.Create(culture, ignoreCase);
         }
 
-        public static MappyOptions Default = new MappyOptions(delimiter: "_");
+        public static readonly MappyOptions Default = new MappyOptions(delimiter: "_");
     }
 }

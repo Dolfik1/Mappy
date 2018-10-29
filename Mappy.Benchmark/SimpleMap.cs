@@ -23,6 +23,7 @@ namespace Mappy.Benchmark
                     }));
 
 
+            
             Mappy.Map<Customer>(
                 GenerateData(1).First());
             

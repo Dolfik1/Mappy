@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Mappy.Converters;
@@ -9,11 +10,14 @@ namespace Mappy
     {
         private MappyOptions Options { get; }
         private IDictionary<string, ITypeConverter> TypeConverters { get; }
+        private IDictionary<int, string[]> ValuesFields { get; }
         
         internal MappingContext(MappyOptions options)
         {
             Options = options;
-            TypeConverters = new Dictionary<string, ITypeConverter>();
+            TypeConverters = new Dictionary<string, ITypeConverter>(
+                StringComparer.Ordinal);
+            ValuesFields = new Dictionary<int, string[]>();
         }
         
         internal T? ConvertNullable<T>(
@@ -25,7 +29,7 @@ namespace Mappy
         {
             var pfx = prefix + name;
             
-            if (!items.TryGetValue(prefix + name, out var value) || value == null)
+            if (!items.TryGetValue(pfx, out var value) || value == null)
                 return default(T?);
 
             if (TypeConverters.TryGetValue(pfx, out var converter)) 
@@ -57,7 +61,7 @@ namespace Mappy
             var mapper = Options.Cache
                 .GetOrCreateTypeMap<T>(Options);
 
-            if (!mapper.HasValues(pfx, items, Options))
+            if (!mapper.HasValues(this, pfx, items, Options))
             {
                 return default(T?);
             }
@@ -104,7 +108,7 @@ namespace Mappy
                 .GetOrCreateTypeMap<T>(Options);
 
 
-            if (!mapper.HasValues(pfx, items, Options))
+            if (!mapper.HasValues(this, pfx, items, Options))
             {
                 return default(T);
             }
@@ -188,9 +192,19 @@ namespace Mappy
                 .GetOrCreateTypeMap<T>(Options);
 
             return values
-                .Where(x => mapper.HasValues(pfx, x, Options))
+                .Where(x => mapper.HasValues(this, pfx, x, Options))
                 .GroupBy(x => mapper.GetIdentifierHashCode(pfx, x))
                 .Select(x => mapper.Map(this, pfx, x));
+        }
+
+        internal bool TryGetValueFields(int hashCode, out string[] valueFields)
+        {
+            return ValuesFields.TryGetValue(hashCode, out valueFields);
+        }
+
+        internal void AddValueFields(int hashCode, string[] valueFields)
+        {
+            ValuesFields.Add(hashCode, valueFields);
         }
     }
 }

@@ -5,7 +5,7 @@ namespace Mappy.Utils
 {
     internal static class HashCode
     {
-
+        
         internal static int CombineHashCodes(params int[] hashCodes)
         {
             return CombineHashCodes(hashCodes.AsEnumerable());
@@ -28,6 +28,11 @@ namespace Mappy.Utils
             }
 
             return hash1 + (hash2 * 1566083941);
+        }
+        
+        internal static int CombineHashCodes(int h1, int h2) {
+            // this is where the magic happens
+            return (((h1 << 5) + h1) ^ h2);
         }
     }
 }
