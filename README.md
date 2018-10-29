@@ -6,18 +6,18 @@ Slapper compatible object mapper
 ```
                           Method |      Mean |     Error |    StdDev |
 -------------------------------- |----------:|----------:|----------:|
-               StraightBenchmark |  18.77 ms | 0.2298 ms | 0.2149 ms |
-                GroupByBenchmark |  58.15 ms | 0.8852 ms | 0.8280 ms |
-                  MappyBenchmark | 140.45 ms | 2.7020 ms | 3.2166 ms |
- MappyBenchmarkBaseConverterOnly | 134.08 ms | 2.1920 ms | 2.0504 ms |
-                SlapperBenchmark | 599.46 ms | 2.1126 ms | 1.9761 ms |
+               StraightBenchmark |  18.44 ms | 0.2827 ms | 0.2644 ms |
+                GroupByBenchmark |  57.45 ms | 0.8098 ms | 0.7575 ms |
+                  MappyBenchmark | 123.45 ms | 1.9327 ms | 1.8079 ms |
+ MappyBenchmarkBaseConverterOnly | 123.51 ms | 2.3070 ms | 2.3691 ms |
+                SlapperBenchmark | 596.42 ms | 1.1709 ms | 1.0953 ms |
 ```
 #### Complex
 ```
                           Method |       Mean |     Error |    StdDev |
 -------------------------------- |-----------:|----------:|----------:|
-                GroupByBenchmark |   242.3 ms |  1.800 ms | 1.5954 ms |
-                  MappyBenchmark |   344.2 ms |  1.990 ms | 1.7642 ms |
- MappyBenchmarkBaseConverterOnly |   330.5 ms |  1.073 ms | 0.8962 ms |
-                SlapperBenchmark | 2,966.1 ms | 10.112 ms | 8.4439 ms |
+                GroupByBenchmark |   239.6 ms |  1.156 ms |  1.081 ms |
+                  MappyBenchmark |   337.2 ms |  6.845 ms |  6.402 ms |
+ MappyBenchmarkBaseConverterOnly |   326.1 ms |  6.216 ms |  7.400 ms |
+                SlapperBenchmark | 3,031.4 ms | 37.129 ms | 34.730 ms |
 ```

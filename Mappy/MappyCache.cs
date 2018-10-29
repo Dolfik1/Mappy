@@ -9,7 +9,10 @@ namespace Mappy
 
         public TypeMap<T> GetOrCreateTypeMap<T>(MappyOptions options)
         {
-            var hash = TypeMap.CalculateHashCode(typeof(T), options.IdAttributeType);
+            var hash = Utils.HashCode.CombineHashCodes(
+                typeof(T).GetHashCode(),
+                options.IdAttributeTypeHash);
+
             return _typeMaps.GetOrAdd(hash, _ => new TypeMap<T>(options.IdAttributeType))
                 as TypeMap<T>;
         }

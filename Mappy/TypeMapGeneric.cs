@@ -140,14 +140,14 @@ namespace Mappy
             string prefix,
             Items items)
         {
-            if (IdentifierFieldsAndProps.Count == 0)
+            if (IdentifierFieldsAndProps.Length == 0)
             {
                 return Guid.NewGuid().GetHashCode();
             }
 
             var ids = IdentifierFieldsAndProps;
 
-            if (ids.Count > 8)
+            if (ids.Length > 8)
             {
 
                 IEnumerable<int> HashCodes()

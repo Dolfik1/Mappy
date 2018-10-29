@@ -7,14 +7,11 @@ namespace Mappy
 {
     public class TypeMap
     {
-        internal HashSet<string> FieldsAndProps { get; }
-        internal HashSet<string> IdentifierFieldsAndProps { get; }
+        internal string[] FieldsAndProps { get; }
+        internal string[] IdentifierFieldsAndProps { get; }
 
         internal TypeMap(Type type, Type idAttribute)
         {
-            IdentifierFieldsAndProps = new HashSet<string>();
-            FieldsAndProps = new HashSet<string>();
-
             bool IsIdentifier(string fieldOrPropName, Type fieldOrPropType, MemberInfo mi)
             {
                 const StringComparison sc = StringComparison.InvariantCultureIgnoreCase;
@@ -25,23 +22,16 @@ namespace Mappy
                     || mi.GetCustomAttribute(idAttribute, true) != null;
             }
 
-            foreach (var field in GetFields(type))
-            {
-                FieldsAndProps.Add(field.Name);
-                if (IsIdentifier(field.Name, field.FieldType, field))
-                {
-                    IdentifierFieldsAndProps.Add(field.Name);
-                }
-            }
+            FieldsAndProps = GetFields(type).Select(x => x.Name)
+                .Concat(GetProperties(type).Select(x => x.Name))
+                .ToArray();
 
-            foreach (var prop in GetProperties(type))
-            {
-                FieldsAndProps.Add(prop.Name);
-                if (IsIdentifier(prop.Name, prop.PropertyType, prop))
-                {
-                    IdentifierFieldsAndProps.Add(prop.Name);
-                }
-            }
+            IdentifierFieldsAndProps =
+                GetFields(type).Where(x => IsIdentifier(x.Name, x.FieldType, x))
+                    .Select(x => x.Name)
+                    .Concat(GetProperties(type).Where(x => IsIdentifier(x.Name, x.PropertyType, x))
+                        .Select(x => x.Name))
+                    .ToArray();
         }
 
         internal IEnumerable<FieldInfo> GetFields(Type type)
@@ -54,13 +44,6 @@ namespace Mappy
             return type
                 .GetProperties()
                 .Where(x => x.CanWrite);
-        }
-
-        internal static int CalculateHashCode(Type type, Type idAttribute)
-        {
-            return Utils.HashCode.CombineHashCodes(
-                   type.GetHashCode(),
-                   idAttribute.GetHashCode());
         }
     }
 }
