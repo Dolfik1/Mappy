@@ -10,7 +10,7 @@ namespace Mappy
         internal HashSet<string> FieldsAndProps { get; }
         internal HashSet<string> IdentifierFieldsAndProps { get; }
 
-        internal TypeMap(Type type)
+        internal TypeMap(Type type, Type idAttribute)
         {
             IdentifierFieldsAndProps = new HashSet<string>();
             FieldsAndProps = new HashSet<string>();
@@ -22,7 +22,7 @@ namespace Mappy
                     fieldOrPropName.Equals("Id", sc)
                     || fieldOrPropName.Equals("Id" + type.Name, sc)
                     || fieldOrPropName.Equals(type.Name + "Id", sc)
-                    || mi.GetCustomAttribute<IdAttribute>(true) != null;
+                    || mi.GetCustomAttribute(idAttribute, true) != null;
             }
 
             foreach (var field in GetFields(type))
@@ -54,6 +54,13 @@ namespace Mappy
             return type
                 .GetProperties()
                 .Where(x => x.CanWrite);
+        }
+
+        internal static int CalculateHashCode(Type type, Type idAttribute)
+        {
+            return Utils.HashCode.CombineHashCodes(
+                   type.GetHashCode(),
+                   idAttribute.GetHashCode());
         }
     }
 }

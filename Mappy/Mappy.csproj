@@ -3,7 +3,7 @@
     <TargetFrameworks>net45; netstandard2.0</TargetFrameworks>
   </PropertyGroup>
   <PropertyGroup>
-    <VersionPrefix>1.0.0-preview-3</VersionPrefix>
-    <Version>1.0.0-preview-3</Version>
+    <VersionPrefix>1.0.0-preview-5</VersionPrefix>
+    <Version>1.0.0-preview-5</Version>
   </PropertyGroup>
 </Project>

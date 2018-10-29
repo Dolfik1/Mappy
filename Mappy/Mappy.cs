@@ -112,7 +112,7 @@ namespace Mappy
                     .Select(dynamicItem => new Dictionary<string, object>(dynamicItem, options.StringComparer));
             }
 
-            return options.Cache.GetOrCreateTypeMap<T>()
+            return options.Cache.GetOrCreateTypeMap<T>(options)
                 .MapEnumerable(items, options);
         }
     }

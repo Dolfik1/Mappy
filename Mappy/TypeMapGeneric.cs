@@ -13,8 +13,8 @@ namespace Mappy
     {
         internal Func<string, IEnumerable<Items>, Items, MappyOptions, T> MapExpression { get; }
 
-        internal TypeMap()
-            : base(typeof(T))
+        internal TypeMap(Type idAttribute)
+            : base(typeof(T), idAttribute)
         {
             var type = typeof(T);
 
@@ -39,7 +39,7 @@ namespace Mappy
 
                 var underlyingType = propOrFieldType;
 
-                if (isEnumerable)
+                if (isEnumerable || isArray)
                 {
                     underlyingType =
                         isArray
@@ -61,7 +61,7 @@ namespace Mappy
                 {
                     methodName = isComplex
                         ? nameof(ConvertUtility.ConvertArrayComplex)
-                        : nameof(ConvertUtility.Convert);
+                        : nameof(ConvertUtility.ConvertArray);
                 }
                 else if (isEnumerable)
                 {

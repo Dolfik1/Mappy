@@ -7,11 +7,10 @@ namespace Mappy
         private readonly ConcurrentDictionary<int, TypeMap> _typeMaps
             = new ConcurrentDictionary<int, TypeMap>();
 
-        public TypeMap<T> GetOrCreateTypeMap<T>()
+        public TypeMap<T> GetOrCreateTypeMap<T>(MappyOptions options)
         {
-            var hash = typeof(T).GetHashCode();
-
-            return _typeMaps.GetOrAdd(hash, _ => new TypeMap<T>())
+            var hash = TypeMap.CalculateHashCode(typeof(T), options.IdAttributeType);
+            return _typeMaps.GetOrAdd(hash, _ => new TypeMap<T>(options.IdAttributeType))
                 as TypeMap<T>;
         }
     }

@@ -46,7 +46,7 @@ namespace Mappy.Utils
             }
 
             var mapper = options.Cache
-                .GetOrCreateTypeMap<T>();
+                .GetOrCreateTypeMap<T>(options);
 
 
             if (!mapper.HasValues(pfx, items, options))
@@ -96,7 +96,7 @@ namespace Mappy.Utils
             }
 
             var mapper = options.Cache
-                .GetOrCreateTypeMap<T>();
+                .GetOrCreateTypeMap<T>(options);
 
 
             if (!mapper.HasValues(pfx, items, options))
@@ -140,6 +140,17 @@ namespace Mappy.Utils
                 .ToArray();
         }
 
+        internal static T[] ConvertArray<T>(
+            MappyOptions options,
+            string prefix,
+            string name,
+            Items items,
+            IEnumerable<Items> values)
+        {
+            return ConvertEnumerable<T>(options, prefix, name, items, values)
+                ?.ToArray();
+        }
+
         internal static IEnumerable<T> ConvertEnumerable<T>(
             MappyOptions options,
             string prefix,
@@ -149,11 +160,21 @@ namespace Mappy.Utils
         {
             var pfx = string.IsNullOrEmpty(prefix)
                 && string.IsNullOrEmpty(name) ? ""
-                : prefix + name + options.Delimiter;
+                : prefix + name;
+
+            if (items.TryGetValue(pfx, out var arrayValue))
+            {
+                return arrayValue == null
+                    ? null
+                    : (IEnumerable<T>)arrayValue;
+            }
+
+            pfx += options.Delimiter;
 
             return values
-                .Where(x => x != null)
-                .Select(x => Convert<T>(options, pfx, options.PrimitiveCollectionSign, x, null));
+                .Select(x => Convert<T>(
+                    options, pfx, options.PrimitiveCollectionSign,
+                    x, null));
         }
 
         private static IEnumerable<T> ConvertEnumerableComplex<T>(
@@ -168,7 +189,7 @@ namespace Mappy.Utils
                 : prefix + name + options.Delimiter;
 
             var mapper = options.Cache
-                .GetOrCreateTypeMap<T>();
+                .GetOrCreateTypeMap<T>(options);
 
             return values
                 .Where(x => mapper.HasValues(pfx, x, options))

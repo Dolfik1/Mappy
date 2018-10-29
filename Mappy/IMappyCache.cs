@@ -2,6 +2,6 @@
 {
     public interface IMappyCache
     {
-        TypeMap<T> GetOrCreateTypeMap<T>();
+        TypeMap<T> GetOrCreateTypeMap<T>(MappyOptions options);
     }
 }
