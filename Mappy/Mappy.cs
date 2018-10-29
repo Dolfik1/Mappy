@@ -54,7 +54,6 @@ namespace Mappy
             MappyOptions options,
             Abbrs abbreviations)
         {
-
             return MapInternal<T>(new List<Items> { items },
                 options, abbreviations)
                 .SingleOrDefault();
@@ -86,31 +85,8 @@ namespace Mappy
             MappyOptions options,
             Abbrs abbreviations)
         {
-            if (_options == null)
-            {
-                _options = MappyOptions.Default;
-            }
-
-            if (options == null)
-            {
-                options = _options;
-            }
-
-            ItemsEnumerable dictionary;
-
-            if (options.UseDefaultDictionaryComparer)
-            {
-                dictionary = items
-                    .Select(dynamicItem => dynamicItem as IDictionary<string, object>)
-                    .ToList();
-            }
-            else
-            {
-                dictionary = items
-                    .Select(dynamicItem => new Dictionary<string, object>(dynamicItem as IDictionary<string, object>, options.StringComparer))
-                    .ToList();
-            }
-
+            var dictionary = items
+                .Select(dynamicItem => dynamicItem as IDictionary<string, object>);
             return MapInternal<T>(dictionary, options, abbreviations);
 
         }
@@ -128,6 +104,12 @@ namespace Mappy
             if (options == null)
             {
                 options = _options;
+            }
+
+            if (!options.UseDefaultDictionaryComparer)
+            {
+                items = items
+                    .Select(dynamicItem => new Dictionary<string, object>(dynamicItem, options.StringComparer));
             }
 
             return options.Cache.GetOrCreateTypeMap<T>()
