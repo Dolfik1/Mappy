@@ -86,9 +86,30 @@ namespace Mappy
             MappyOptions options,
             Abbrs abbreviations)
         {
-            var dictionary = items
-                .Select(dynamicItem => dynamicItem as IDictionary<string, object>)
-                .ToList();
+            if (_options == null)
+            {
+                _options = MappyOptions.Default;
+            }
+
+            if (options == null)
+            {
+                options = _options;
+            }
+
+            ItemsEnumerable dictionary;
+
+            if (options.UseDefaultDictionaryComparer)
+            {
+                dictionary = items
+                    .Select(dynamicItem => dynamicItem as IDictionary<string, object>)
+                    .ToList();
+            }
+            else
+            {
+                dictionary = items
+                    .Select(dynamicItem => new Dictionary<string, object>(dynamicItem as IDictionary<string, object>, options.StringComparer))
+                    .ToList();
+            }
 
             return MapInternal<T>(dictionary, options, abbreviations);
 

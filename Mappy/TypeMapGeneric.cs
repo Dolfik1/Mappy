@@ -34,11 +34,17 @@ namespace Mappy
             {
                 var isEnumerable = propOrFieldType.Namespace != "System"
                     && typeof(IEnumerable).IsAssignableFrom(propOrFieldType);
+
+                var isArray = propOrFieldType.IsArray;
+
                 var underlyingType = propOrFieldType;
 
                 if (isEnumerable)
                 {
-                    underlyingType = propOrFieldType.GetGenericArguments()[0];
+                    underlyingType =
+                        isArray
+                        ? propOrFieldType.GetElementType()
+                        : propOrFieldType.GetGenericArguments()[0];
                 }
 
                 var isComplex = underlyingType.Namespace != "System"
@@ -50,7 +56,14 @@ namespace Mappy
                 MethodInfo convertMethod;
                 const BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Static;
                 string methodName;
-                if (isEnumerable)
+
+                if (isArray)
+                {
+                    methodName = isComplex
+                        ? nameof(ConvertUtility.ConvertArrayComplex)
+                        : nameof(ConvertUtility.Convert);
+                }
+                else if (isEnumerable)
                 {
                     methodName = isComplex
                         ? nameof(ConvertUtility.ConvertListComplex)

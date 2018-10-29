@@ -107,7 +107,56 @@ namespace Mappy.Utils
             return mapper.Map(pfx, values, options);
         }
 
+        internal static List<T> ConvertList<T>(
+            MappyOptions options,
+            string prefix,
+            string name,
+            Items items,
+            IEnumerable<Items> values)
+        {
+            return ConvertEnumerable<T>(options, prefix, name, items, values)
+                .ToList();
+        }
+
         internal static List<T> ConvertListComplex<T>(
+            MappyOptions options,
+            string prefix,
+            string name,
+            Items items,
+            IEnumerable<Items> values)
+        {
+            return ConvertEnumerableComplex<T>(options, prefix, name, items, values)
+                .ToList();
+        }
+
+        internal static T[] ConvertArrayComplex<T>(
+            MappyOptions options,
+            string prefix,
+            string name,
+            Items items,
+            IEnumerable<Items> values)
+        {
+            return ConvertEnumerableComplex<T>(options, prefix, name, items, values)
+                .ToArray();
+        }
+
+        internal static IEnumerable<T> ConvertEnumerable<T>(
+            MappyOptions options,
+            string prefix,
+            string name,
+            Items items,
+            IEnumerable<Items> values)
+        {
+            var pfx = string.IsNullOrEmpty(prefix)
+                && string.IsNullOrEmpty(name) ? ""
+                : prefix + name + options.Delimiter;
+
+            return values
+                .Where(x => x != null)
+                .Select(x => Convert<T>(options, pfx, options.PrimitiveCollectionSign, x, null));
+        }
+
+        private static IEnumerable<T> ConvertEnumerableComplex<T>(
             MappyOptions options,
             string prefix,
             string name,
@@ -124,25 +173,7 @@ namespace Mappy.Utils
             return values
                 .Where(x => mapper.HasValues(pfx, x, options))
                 .GroupBy(x => mapper.GetIdentifierHashCode(pfx, x))
-                .Select(x => mapper.Map(pfx, x, options))
-                .ToList();
-        }
-
-        internal static List<T> ConvertList<T>(
-            MappyOptions options,
-            string prefix,
-            string name,
-            Items items,
-            IEnumerable<Items> values)
-        {
-            var pfx = string.IsNullOrEmpty(prefix)
-                && string.IsNullOrEmpty(name) ? ""
-                : prefix + name + options.Delimiter;
-
-            return values
-                .Where(x => x != null)
-                .Select(x => Convert<T>(options, pfx, options.PrimitiveCollectionSign, x, null))
-                .ToList();
+                .Select(x => mapper.Map(pfx, x, options));
         }
     }
 }
