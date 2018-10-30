@@ -1,7 +1,7 @@
+using Mappy.Converters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Mappy.Converters;
 using Items = System.Collections.Generic.IDictionary<string, object>;
 
 namespace Mappy
@@ -11,7 +11,7 @@ namespace Mappy
         private MappyOptions Options { get; }
         private IDictionary<string, ITypeConverter> TypeConverters { get; }
         private IDictionary<int, string[]> ValuesFields { get; }
-        
+
         internal MappingContext(MappyOptions options)
         {
             Options = options;
@@ -19,7 +19,7 @@ namespace Mappy
                 StringComparer.Ordinal);
             ValuesFields = new Dictionary<int, string[]>();
         }
-        
+
         internal T? ConvertNullable<T>(
             string prefix,
             string name,
@@ -28,19 +28,19 @@ namespace Mappy
             where T : struct
         {
             var pfx = prefix + name;
-            
+
             if (!items.TryGetValue(pfx, out var value) || value == null)
                 return default(T?);
 
-            if (TypeConverters.TryGetValue(pfx, out var converter)) 
+            if (TypeConverters.TryGetValue(pfx, out var converter))
                 return converter.Convert<T>(value);
-            
+
             converter = Options.Converters.First(x => x.CanConvert<T>(value));
             TypeConverters.Add(pfx, converter);
 
             return converter.Convert<T>(value);
         }
-        
+
         internal T? ConvertNullableComplex<T>(
             string prefix,
             string name,
@@ -66,7 +66,7 @@ namespace Mappy
                 return default(T?);
             }
 
-            return mapper.Map(this, pfx, values);
+            return mapper.Map(this, pfx, items, values);
         }
 
         internal T Convert<T>(
@@ -79,9 +79,9 @@ namespace Mappy
             if (!items.TryGetValue(pfx, out var value) || value == null)
                 return default(T);
 
-            if (TypeConverters.TryGetValue(pfx, out var converter)) 
+            if (TypeConverters.TryGetValue(pfx, out var converter))
                 return converter.Convert<T>(value);
-            
+
             converter = Options.Converters.First(x => x.CanConvert<T>(value));
             TypeConverters.Add(pfx, converter);
 
@@ -113,7 +113,7 @@ namespace Mappy
                 return default(T);
             }
 
-            return mapper.Map(this, pfx, values);
+            return mapper.Map(this, pfx, items, values);
         }
 
         internal List<T> ConvertList<T>(
@@ -168,13 +168,13 @@ namespace Mappy
 
             if (items.TryGetValue(pfx, out var arrayValue))
             {
-                return (IEnumerable<T>) arrayValue;
+                return (IEnumerable<T>)arrayValue;
             }
 
             pfx += Options.Delimiter;
 
             return values
-                .Select(x => Convert<T>(pfx, 
+                .Select(x => Convert<T>(pfx,
                     Options.PrimitiveCollectionSign, x, null));
         }
 
@@ -193,8 +193,8 @@ namespace Mappy
 
             return values
                 .Where(x => mapper.HasValues(this, pfx, x, Options))
-                .GroupBy(x => mapper.GetIdentifierHashCode(pfx, x))
-                .Select(x => mapper.Map(this, pfx, x));
+                .GroupBy(x => x, new IdentifierComparer(pfx, mapper.IdentifierFieldsAndProps))
+                .Select(x => mapper.Map(this, pfx, x.Key, x));
         }
 
         internal bool TryGetValueFields(int hashCode, out string[] valueFields)

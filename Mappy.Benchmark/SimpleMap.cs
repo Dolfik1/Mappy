@@ -1,7 +1,7 @@
 ﻿using BenchmarkDotNet.Attributes;
+using Mappy.Converters;
 using System.Collections.Generic;
 using System.Linq;
-using Mappy.Converters;
 
 namespace Mappy.Benchmark
 {
@@ -23,13 +23,13 @@ namespace Mappy.Benchmark
                     }));
 
 
-            
+
             Mappy.Map<Customer>(
                 GenerateData(1).First());
-            
+
             MappyBaseConverterOnly.Map<Customer>(
                 GenerateData(1).First());
-            
+
             Slapper.AutoMapper.Map<Customer>(
                 GenerateData(1).First());
         }
@@ -40,9 +40,9 @@ namespace Mappy.Benchmark
             GenerateData(Iterations)
                 .Select(x => new Customer
                 {
-                    CustomerId = (int) x["CustomerId"],
-                    FirstName = (string) x["FirstName"],
-                    LastName = (string) x["LastName"]
+                    CustomerId = (int)x["CustomerId"],
+                    FirstName = (string)x["FirstName"],
+                    LastName = (string)x["LastName"]
                 })
                 .ToList();
         }
@@ -57,9 +57,9 @@ namespace Mappy.Benchmark
                     var first = x.First();
                     return new Customer
                     {
-                        CustomerId = (int) first["CustomerId"],
-                        FirstName = (string) first["FirstName"],
-                        LastName = (string) first["LastName"]
+                        CustomerId = (int)first["CustomerId"],
+                        FirstName = (string)first["FirstName"],
+                        LastName = (string)first["LastName"]
                     };
                 })
                 .ToList();

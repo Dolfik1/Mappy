@@ -49,7 +49,7 @@ namespace Mappy
                 {
                     throw new Exception("Can't detect type.");
                 }
-                
+
                 var isComplex = underlyingType.Namespace != "System"
                                 && !underlyingType.IsPrimitive
                                 && !underlyingType.IsValueType;
@@ -83,6 +83,7 @@ namespace Mappy
                         ? nameof(MappingContext.ConvertComplex)
                         : nameof(MappingContext.Convert);
                 }
+
                 var convertMethod = typeof(MappingContext).GetMethod(
                     methodName, BindingFlags.Instance | BindingFlags.NonPublic);
 
@@ -105,7 +106,7 @@ namespace Mappy
             var bindings = GetProperties(type)
                 .Select(property => Process(property.Name, property.PropertyType, property))
                 .ToList();
-            
+
             bindings.AddRange(GetFields(type)
                 .Select(field => Process(field.Name, field.FieldType, field)));
 
@@ -119,9 +120,10 @@ namespace Mappy
         internal T Map(
             MappingContext context,
             string prefix,
+            Items first,
             IEnumerable<Items> values)
         {
-            return MapExpression(context, prefix, values, values.First());
+            return MapExpression(context, prefix, values, first);
         }
 
         internal IEnumerable<T> MapEnumerable(
@@ -135,72 +137,20 @@ namespace Mappy
                 values);
         }
 
-
-        internal int GetIdentifierHashCode(
-            string prefix,
-            Items items)
-        {
-            if (IdentifierFieldsAndProps.Length == 0)
-            {
-                return Guid.NewGuid().GetHashCode();
-            }
-
-            var ids = IdentifierFieldsAndProps;
-
-            if (ids.Length > 8)
-            {
-
-                IEnumerable<int> HashCodes()
-                {
-                    foreach (var id in ids)
-                    {
-                        if (!items.TryGetValue(prefix + id, out var value))
-                        {
-                            continue;
-                        }
-
-                        yield return value?.GetHashCode() ?? 0;
-                    }
-                }
-
-                return HashCode.CombineHashCodes(HashCodes());
-            }
-
-            var hashCode = 0;
-            foreach (var id in ids)
-            {
-                if (!items.TryGetValue(prefix + id, out var value))
-                {
-                    continue;
-                }
-
-                if (hashCode == 0)
-                {
-                    hashCode = value.GetHashCode();
-                }
-                else
-                {
-                    HashCode.CombineHashCodes(value.GetHashCode(), hashCode);
-                }
-            }
-                
-            return hashCode;
-        }
-
         internal bool HasValues(
             MappingContext context,
             string prefix,
             Items items,
             MappyOptions options)
-        {   
-            var hashCode = HashCode.CombineHashCodes(prefix.GetHashCode(), GetHashCode());            
+        {
+            var hashCode = HashCode.CombineHashCodes(prefix.GetHashCode(), GetHashCode());
             if (!context.TryGetValueFields(hashCode, out var valueFields))
             {
                 valueFields = items
                     .Where(x => x.Key.StartsWith(prefix, options.StringComparison))
                     .Select(x => x.Key)
                     .ToArray();
-                
+
                 context.AddValueFields(hashCode, valueFields);
             }
 

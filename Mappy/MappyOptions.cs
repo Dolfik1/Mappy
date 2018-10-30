@@ -9,9 +9,8 @@ namespace Mappy
     public class MappyOptions
     {
         public string Delimiter { get; }
-        
+
         public Type IdAttributeType { get; }
-        internal int IdAttributeTypeHash { get; }
 
         public StringComparison StringComparison { get; }
         public bool UseDefaultDictionaryComparer { get; }
@@ -34,9 +33,8 @@ namespace Mappy
             IEnumerable<ITypeConverter> converters = null)
         {
             Delimiter = delimiter;
-            
+
             IdAttributeType = idAttributeType ?? typeof(IdAttribute);
-            IdAttributeTypeHash = IdAttributeType.GetHashCode();
 
             StringComparison = stringComparison;
             UseDefaultDictionaryComparer = useDefaultDictionaryComparer;

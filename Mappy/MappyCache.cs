@@ -1,19 +1,18 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 
 namespace Mappy
 {
     public class MappyCache : IMappyCache
     {
-        private readonly ConcurrentDictionary<int, TypeMap> _typeMaps
-            = new ConcurrentDictionary<int, TypeMap>();
+        private readonly ConcurrentDictionary<(Type, Type), TypeMap> _typeMaps
+            = new ConcurrentDictionary<(Type, Type), TypeMap>();
 
         public TypeMap<T> GetOrCreateTypeMap<T>(MappyOptions options)
         {
-            var hash = Utils.HashCode.CombineHashCodes(
-                typeof(T).GetHashCode(),
-                options.IdAttributeTypeHash);
-
-            return _typeMaps.GetOrAdd(hash, _ => new TypeMap<T>(options.IdAttributeType))
+            return _typeMaps.GetOrAdd(
+                (typeof(T), options.IdAttributeType),
+                _ => new TypeMap<T>(options.IdAttributeType))
                 as TypeMap<T>;
         }
     }

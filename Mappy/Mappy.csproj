@@ -6,4 +6,7 @@
     <VersionPrefix>1.0.0-preview-5</VersionPrefix>
     <Version>1.0.0-preview-5</Version>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="System.ValueTuple" Version="4.5.0" />
+  </ItemGroup>
 </Project>
