@@ -107,10 +107,16 @@ namespace Mappy
             var mapper = Options.Cache
                 .GetOrCreateTypeMap<T>(Options);
 
-
             if (!mapper.HasValues(this, pfx, items, Options))
             {
-                return default(T);
+                // Slapper undocummented bug or feature?
+                // see Should_Map_First_Not_Null_Items_In_Group test
+                items = values.FirstOrDefault(x => mapper.HasValues(this, pfx, x, Options));
+
+                if (items == null)
+                {
+                    return default(T);
+                }
             }
 
             return mapper.Map(this, pfx, items, values);

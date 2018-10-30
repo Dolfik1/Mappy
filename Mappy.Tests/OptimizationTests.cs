@@ -75,9 +75,6 @@ namespace Mappy.Tests
             Assert.Equal(fullInfo["Orders_OrderId"], order.OrderId);
             Assert.Equal(fullInfo["Orders_OrderTotal"], order.OrderTotal);
             Assert.Equal(fullInfo["Orders_OrderDate"], order.OrderDate);
-
-
-
         }
     }
 }
