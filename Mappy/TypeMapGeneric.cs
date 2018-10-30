@@ -137,6 +137,15 @@ namespace Mappy
                 values);
         }
 
+        internal bool HasKeys(
+            string prefix,
+            Items items,
+            MappyOptions options)
+        {
+            return items
+                .Any(x => x.Key.StartsWith(prefix, options.StringComparison));
+        }
+
         internal bool HasValues(
             MappingContext context,
             string prefix,

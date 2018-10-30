@@ -123,7 +123,7 @@ namespace Mappy
             IEnumerable<Items> values)
         {
             return ConvertEnumerable<T>(prefix, name, items, values)
-                .ToList();
+                ?.ToList();
         }
 
         internal List<T> ConvertListComplex<T>(
@@ -133,7 +133,7 @@ namespace Mappy
             IEnumerable<Items> values)
         {
             return ConvertEnumerableComplex<T>(prefix, name, items, values)
-                .ToList();
+                ?.ToList();
         }
 
         internal T[] ConvertArrayComplex<T>(
@@ -143,7 +143,7 @@ namespace Mappy
             IEnumerable<Items> values)
         {
             return ConvertEnumerableComplex<T>(prefix, name, items, values)
-                .ToArray();
+                ?.ToArray();
         }
 
         internal T[] ConvertArray<T>(
@@ -172,8 +172,15 @@ namespace Mappy
             }
 
             pfx += Options.Delimiter;
+            var pfxWithSign = pfx + Options.PrimitiveCollectionSign;
+
+            if (!items.ContainsKey(pfxWithSign))
+            {
+                return null;
+            }
 
             return values
+                .Where(x => x[pfxWithSign] != null)
                 .Select(x => Convert<T>(pfx,
                     Options.PrimitiveCollectionSign, x, null));
         }
@@ -190,6 +197,12 @@ namespace Mappy
 
             var mapper = Options.Cache
                 .GetOrCreateTypeMap<T>(Options);
+
+            // items can be null only when MapEnumerable called
+            if (items != null && !mapper.HasKeys(pfx, items, Options))
+            {
+                return null;
+            }
 
             return values
                 .Where(x => mapper.HasValues(this, pfx, x, Options))

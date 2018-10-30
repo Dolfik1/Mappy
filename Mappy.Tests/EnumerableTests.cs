@@ -138,5 +138,72 @@ namespace Mappy.Tests
             Assert.Equal(UserSkill.SkillA, user.Skills[0]);
             Assert.Equal(UserSkill.SkillB, user.Skills[1]);
         }
+
+        struct UserWithPhones
+        {
+            public int Id { get; set; }
+            public string FirstName { get; set; }
+            public string LastName { get; set; }
+            public IEnumerable<string> Phones { get; set; }
+        }
+
+        [Fact]
+        public void Should_Map_Not_Exists_Primitive_Array_Values_To_Null_Array()
+        {
+            // Arrange
+            var dictionary = new Dictionary<string, object>
+            {
+                {"Id", 1},
+                {"FirstName", "Bob"},
+                {"LastName", "Smith" }
+            };
+
+            var dictionary2 = new Dictionary<string, object>
+            {
+                {"Id", 1},
+                {"FirstName", "Bob"},
+                {"LastName", "Smith"}
+            };
+
+            var mappy = new Mappy();
+            var users = mappy.Map<UserWithPhones>(
+                new List<Dictionary<string, object>> { dictionary, dictionary2 })
+                .ToList();
+
+            Assert.Single(users);
+
+            var user = users.Single();
+
+            Assert.Equal(dictionary["Id"], user.Id);
+            Assert.Equal(dictionary["FirstName"], user.FirstName);
+            Assert.Equal(dictionary["LastName"], user.LastName);
+            Assert.Null(user.Phones);
+        }
+
+        [Fact]
+        public void Should_Map_Not_Exists_Complex_Array_Values_To_Null_Array()
+        {
+            // Arrange
+            var dictionary = new Dictionary<string, object>
+            {
+                {"CustomerId", 1},
+                {"FirstName", "Bob"},
+                {"LastName", "Smith"}
+            };
+
+
+            var mappy = new Mappy();
+
+            // Act
+            var customer = mappy.Map<Customer>(dictionary);
+
+            // Assert
+
+            Assert.Equal(dictionary["CustomerId"], customer.CustomerId);
+            Assert.Equal(dictionary["FirstName"], customer.FirstName);
+            Assert.Equal(dictionary["LastName"], customer.LastName);
+
+            Assert.Null(customer.Orders);
+        }
     }
 }
