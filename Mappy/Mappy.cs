@@ -113,9 +113,9 @@ namespace Mappy
             }
 
             var context = new MappingContext(options);
-            
+
             return options.Cache.GetOrCreateTypeMap<T>(options)
-                .MapEnumerable(items, context);
+                .MapEnumerable(items, null, context);
         }
     }
 }

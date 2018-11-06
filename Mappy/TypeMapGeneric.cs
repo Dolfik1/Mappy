@@ -1,5 +1,4 @@
-﻿using Mappy.Utils;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -128,40 +127,23 @@ namespace Mappy
 
         internal IEnumerable<T> MapEnumerable(
             IEnumerable<Items> values,
+            Items items,
             MappingContext context)
         {
             return context.ConvertListComplex<T>(
                 "",
                 "",
-                null,
+                items,
                 values);
         }
 
-        internal bool HasKeys(
-            string prefix,
-            Items items,
-            MappyOptions options)
-        {
-            return items
-                .Any(x => x.Key.StartsWith(prefix, options.StringComparison));
-        }
-
         internal bool HasValues(
-            MappingContext context,
-            string prefix,
-            Items items,
-            MappyOptions options)
+                MappingContext context,
+                string prefix,
+                Items items,
+                MappyOptions options)
         {
-            var hashCode = HashCode.CombineHashCodes(prefix.GetHashCode(), GetHashCode());
-            if (!context.TryGetValueFields(hashCode, out var valueFields))
-            {
-                valueFields = items
-                    .Where(x => x.Key.StartsWith(prefix, options.StringComparison))
-                    .Select(x => x.Key)
-                    .ToArray();
-
-                context.AddValueFields(hashCode, valueFields);
-            }
+            var valueFields = context.GetExistsFieldsForType<T>(prefix, items, options);
 
             if (items.Count == 0)
             {

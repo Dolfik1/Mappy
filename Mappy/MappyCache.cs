@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Mappy.Comparers;
+using System;
 using System.Collections.Concurrent;
 
 namespace Mappy
@@ -6,7 +7,8 @@ namespace Mappy
     public class MappyCache : IMappyCache
     {
         private readonly ConcurrentDictionary<(Type, Type), TypeMap> _typeMaps
-            = new ConcurrentDictionary<(Type, Type), TypeMap>();
+            = new ConcurrentDictionary<(Type, Type), TypeMap>(
+                new TypeMapCacheComparer());
 
         public TypeMap<T> GetOrCreateTypeMap<T>(MappyOptions options)
         {

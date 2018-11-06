@@ -1,4 +1,6 @@
+using Mappy.Comparers;
 using Mappy.Converters;
+using Mappy.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,12 +53,6 @@ namespace Mappy
             var pfx = string.IsNullOrEmpty(prefix)
                       && string.IsNullOrEmpty(name) ? ""
                 : prefix + name + Options.Delimiter;
-
-            if (!items
-                .Any(x => x.Key.StartsWith(pfx, Options.StringComparison)))
-            {
-                return default(T?);
-            }
 
             var mapper = Options.Cache
                 .GetOrCreateTypeMap<T>(Options);
@@ -205,10 +201,7 @@ namespace Mappy
                 .GetOrCreateTypeMap<T>(Options);
 
             // items can be null only when MapEnumerable called
-            if (items != null && !mapper.HasKeys(pfx, items, Options))
-            {
-                return null;
-            }
+
 
             return values
                 .Where(x => mapper.HasValues(this, pfx, x, Options))
@@ -224,6 +217,27 @@ namespace Mappy
         internal void AddValueFields(int hashCode, string[] valueFields)
         {
             ValuesFields.Add(hashCode, valueFields);
+        }
+
+
+
+        internal string[] GetExistsFieldsForType<T>(
+            string prefix,
+            Items items,
+            MappyOptions options)
+        {
+            var hashCode = HashCode.CombineHashCodes(prefix.GetHashCode(), typeof(T).GetHashCode());
+            if (!TryGetValueFields(hashCode, out var valueFields))
+            {
+                valueFields = items
+                    .Where(x => x.Key.StartsWith(prefix, options.StringComparison))
+                    .Select(x => x.Key)
+                    .ToArray();
+
+                AddValueFields(hashCode, valueFields);
+            }
+
+            return valueFields;
         }
     }
 }

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Mappy
+namespace Mappy.Comparers
 {
     internal struct IdentifierComparer : IEqualityComparer<IDictionary<string, object>>
     {

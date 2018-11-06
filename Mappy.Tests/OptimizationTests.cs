@@ -22,6 +22,17 @@ namespace Mappy.Tests
             public DateTime? OrderDate { get; set; }
         }
 
+        class DefaultValueTest
+        {
+            public DefaultValueTest()
+            {
+                DefaultValue = "Hello, world!";
+            }
+
+            public int Id { get; set; }
+            public string DefaultValue { get; set; }
+        }
+
         [Fact]
         public void Should_Map_Different_Sets_Correctly()
         {
@@ -75,6 +86,23 @@ namespace Mappy.Tests
             Assert.Equal(fullInfo["Orders_OrderId"], order.OrderId);
             Assert.Equal(fullInfo["Orders_OrderTotal"], order.OrderTotal);
             Assert.Equal(fullInfo["Orders_OrderDate"], order.OrderDate);
+        }
+
+
+
+        [Fact]
+        public void Should_not_rewrite_default_values_for_non_set_values()
+        {
+            var dict = new Dictionary<string, object>
+            {
+                { "Id", 1 }
+            };
+
+            var mappy = new Mappy();
+            var result = mappy.Map<DefaultValueTest>(dict);
+
+            Assert.Equal(dict["Id"], result.Id);
+            Assert.Equal(new DefaultValueTest().DefaultValue, result.DefaultValue);
         }
     }
 }
