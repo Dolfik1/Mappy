@@ -22,14 +22,14 @@ namespace Mappy.Tests.Slapper
             var mappy = new Mappy();
 
             // Assert
-            Assert.Throws<ArgumentException>(() => mappy.Map<Person>(new List<dynamic>() {new object()}));
+            Assert.Throws<ArgumentException>(() => mappy.Map<Person>(someObject as IDictionary<string, object>));
         }
 
         [Fact]
         public void Will_Not_Throw_An_Exception_If_The_List_Items_Are_Not_Dynamic()
         {
             // Arrange
-            var someObjectList = new List<object> {null};
+            var someObjectList = new List<object> { null };
             var mappy = new Mappy();
 
             // Act

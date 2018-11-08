@@ -8,18 +8,15 @@ namespace Mappy.Comparers
     {
         public bool Equals(ComparerType x, ComparerType y)
         {
-            if (x.Item1 != y.Item1
-                || x.Item2 != y.Item2)
-            {
-                return false;
-            }
-
-            return true;
+            return x.Item1 == y.Item1
+                && x.Item2 == y.Item2;
         }
 
         public int GetHashCode(ComparerType obj)
         {
-            return HashCode.CombineHashCodes(obj.Item1.GetHashCode(), obj.Item2.GetHashCode());
+            return HashCode.CombineHashCodes(
+                obj.Item1.GetHashCode(),
+                obj.Item2.GetHashCode());
         }
     }
 }

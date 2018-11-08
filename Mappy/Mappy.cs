@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Abbrs = System.Collections.Generic.IDictionary<string, string>;
 using Items = System.Collections.Generic.IDictionary<string, object>;
@@ -54,6 +55,10 @@ namespace Mappy
             MappyOptions options,
             Abbrs abbreviations)
         {
+            if (items == null)
+            {
+                throw new ArgumentException("Mapping value should be specified.");
+            }
             return MapInternal<T>(new List<Items> { items },
                 options, abbreviations)
                 .SingleOrDefault();
@@ -86,7 +91,8 @@ namespace Mappy
             Abbrs abbreviations)
         {
             var dictionary = items
-                .Select(dynamicItem => dynamicItem as IDictionary<string, object>);
+                .Select(dynamicItem => dynamicItem as IDictionary<string, object>)
+                .Where(x => x != null);
             return MapInternal<T>(dictionary, options, abbreviations);
 
         }
