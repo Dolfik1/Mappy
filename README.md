@@ -1,3 +1,5 @@
+[![NuGet](https://img.shields.io/nuget/v/Mappy.svg)](https://www.nuget.org/packages/Mappy/)
+
 # Mappy
 Slapper compatible object mapper
 
