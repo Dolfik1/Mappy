@@ -72,13 +72,15 @@ namespace Mappy.Comparers
                     continue;
                 }
 
+                var hc = value?.GetHashCode() ?? 0;
+
                 if (hashCode == 0)
                 {
-                    hashCode = value.GetHashCode();
+                    hashCode = hc;
                 }
                 else
                 {
-                    HashCode.CombineHashCodes(value.GetHashCode(), hashCode);
+                    HashCode.CombineHashCodes(hc, hashCode);
                 }
             }
 
