@@ -24,6 +24,8 @@ namespace Mappy
 
             var newValue = Expression.New(type);
 
+            var defaultObject = Activator.CreateInstance<T>();
+
             MemberBinding Process(
                 string propOrFieldName,
                 Type propOrFieldType,
@@ -91,13 +93,18 @@ namespace Mappy
                     throw new Exception($"Convert method with name \"{methodName}\" does not found.");
                 }
 
+                var defaultValue = Expression.PropertyOrField(
+                    Expression.Constant(defaultObject),
+                    propOrFieldName);
+
                 var convertCall = Expression.Call(
                     context,
                     convertMethod.MakeGenericMethod(underlyingType),
                     prefix,
                     Expression.Constant(propOrFieldName),
                     first,
-                    values);
+                    values,
+                    defaultValue);
 
                 return Expression.Bind(mi, convertCall);
             }
@@ -134,14 +141,15 @@ namespace Mappy
                 "",
                 "",
                 items,
-                values);
+                values,
+                default(List<T>));
         }
 
         internal bool HasValues(
-                MappingContext context,
-                string prefix,
-                Items items,
-                MappyOptions options)
+            MappingContext context,
+            string prefix,
+            Items items,
+            MappyOptions options)
         {
             var valueFields = context.GetExistsFieldsForType<T>(prefix, items, options);
 
@@ -159,6 +167,22 @@ namespace Mappy
             }
 
             return false;
+        }
+
+        internal bool HasKeys(
+            MappingContext context,
+            string prefix,
+            Items items,
+            MappyOptions options)
+        {
+            var valueFields = context.GetExistsFieldsForType<T>(prefix, items, options);
+
+            if (items.Count == 0 || valueFields.Length == 0)
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }

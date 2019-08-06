@@ -30,6 +30,7 @@ namespace Mappy.Tests
             }
 
             public int Id { get; set; }
+
             public string DefaultValue { get; set; }
         }
 

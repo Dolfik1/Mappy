@@ -26,13 +26,16 @@ namespace Mappy
             string prefix,
             string name,
             Items items,
-            IEnumerable<Items> values)
+            IEnumerable<Items> values,
+            T? defaultValue)
             where T : struct
         {
             var pfx = prefix + name;
 
             if (!items.TryGetValue(pfx, out var value) || value == null)
-                return default(T?);
+            {
+                return defaultValue;
+            }
 
             if (TypeConverters.TryGetValue(pfx, out var converter))
                 return converter.Convert<T>(value);
@@ -47,7 +50,8 @@ namespace Mappy
             string prefix,
             string name,
             Items items,
-            IEnumerable<Items> values)
+            IEnumerable<Items> values,
+            T? defaultValue)
             where T : struct
         {
             var pfx = string.IsNullOrEmpty(prefix)
@@ -59,7 +63,7 @@ namespace Mappy
 
             if (!mapper.HasValues(this, pfx, items, Options))
             {
-                return default(T?);
+                return defaultValue;
             }
 
             return mapper.Map(this, pfx, items, values);
@@ -69,11 +73,15 @@ namespace Mappy
             string prefix,
             string name,
             Items items,
-            IEnumerable<Items> values)
+            IEnumerable<Items> values,
+            T defaultValue)
         {
             var pfx = prefix + name;
+
             if (!items.TryGetValue(pfx, out var value) || value == null)
-                return default(T);
+            {
+                return defaultValue;
+            }
 
             if (TypeConverters.TryGetValue(pfx, out var converter))
                 return converter.Convert<T>(value);
@@ -88,7 +96,8 @@ namespace Mappy
             string prefix,
             string name,
             Items items,
-            IEnumerable<Items> values)
+            IEnumerable<Items> values,
+            T defaultValue)
         {
             var pfx = string.IsNullOrEmpty(prefix)
                 && string.IsNullOrEmpty(name) ? ""
@@ -97,7 +106,7 @@ namespace Mappy
             if (!items
                 .Any(x => x.Key.StartsWith(pfx, Options.StringComparison)))
             {
-                return default(T);
+                return defaultValue;
             }
 
             var mapper = Options.Cache
@@ -111,7 +120,7 @@ namespace Mappy
 
                 if (items == null)
                 {
-                    return default(T);
+                    return defaultValue;
                 }
             }
 
@@ -122,9 +131,10 @@ namespace Mappy
             string prefix,
             string name,
             Items items,
-            IEnumerable<Items> values)
+            IEnumerable<Items> values,
+            IEnumerable<T> defaultValue)
         {
-            return ConvertEnumerable<T>(prefix, name, items, values)
+            return ConvertEnumerable(prefix, name, items, values, defaultValue)
                 ?.ToList();
         }
 
@@ -132,9 +142,10 @@ namespace Mappy
             string prefix,
             string name,
             Items items,
-            IEnumerable<Items> values)
+            IEnumerable<Items> values,
+            IEnumerable<T> defaultValue)
         {
-            return ConvertEnumerableComplex<T>(prefix, name, items, values)
+            return ConvertEnumerableComplex(prefix, name, items, values, defaultValue)
                 ?.ToList();
         }
 
@@ -142,9 +153,10 @@ namespace Mappy
             string prefix,
             string name,
             Items items,
-            IEnumerable<Items> values)
+            IEnumerable<Items> values,
+            IEnumerable<T> defaultValue)
         {
-            return ConvertEnumerableComplex<T>(prefix, name, items, values)
+            return ConvertEnumerableComplex(prefix, name, items, values, defaultValue)
                 ?.ToArray();
         }
 
@@ -152,9 +164,10 @@ namespace Mappy
             string prefix,
             string name,
             Items items,
-            IEnumerable<Items> values)
+            IEnumerable<Items> values,
+            IEnumerable<T> defaultValue)
         {
-            return ConvertEnumerable<T>(prefix, name, items, values)
+            return ConvertEnumerable(prefix, name, items, values, defaultValue)
                 ?.ToArray();
         }
 
@@ -162,7 +175,8 @@ namespace Mappy
             string prefix,
             string name,
             Items items,
-            IEnumerable<Items> values)
+            IEnumerable<Items> values,
+            IEnumerable<T> defaultValue)
         {
             var pfx = string.IsNullOrEmpty(prefix)
                 && string.IsNullOrEmpty(name) ? ""
@@ -178,20 +192,21 @@ namespace Mappy
 
             if (!items.ContainsKey(pfxWithSign))
             {
-                return null;
+                return defaultValue;
             }
 
             return values
                 .Where(x => x[pfxWithSign] != null)
                 .Select(x => Convert<T>(pfx,
-                    Options.PrimitiveCollectionSign, x, null));
+                    Options.PrimitiveCollectionSign, x, null, default(T)));
         }
 
         private IEnumerable<T> ConvertEnumerableComplex<T>(
             string prefix,
             string name,
             Items items,
-            IEnumerable<Items> values)
+            IEnumerable<Items> values,
+            IEnumerable<T> defaultValue)
         {
             var pfx = string.IsNullOrEmpty(prefix)
                 && string.IsNullOrEmpty(name) ? ""
@@ -202,6 +217,10 @@ namespace Mappy
 
             // items can be null only when MapEnumerable called
 
+            if (!string.IsNullOrEmpty(pfx) && !mapper.HasKeys(this, pfx, items, Options))
+            {
+                return defaultValue;
+            }
 
             return values
                 .Where(x => mapper.HasValues(this, pfx, x, Options))

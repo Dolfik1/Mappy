@@ -3,8 +3,8 @@
     <TargetFrameworks>net45; netstandard2.0</TargetFrameworks>
   </PropertyGroup>
   <PropertyGroup>
-    <VersionPrefix>1.0.0-preview-9</VersionPrefix>
-    <Version>1.0.0-preview-9</Version>
+    <VersionPrefix>1.0.0-preview-10</VersionPrefix>
+    <Version>1.0.0-preview-10</Version>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
