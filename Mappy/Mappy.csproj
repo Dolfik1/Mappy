@@ -3,10 +3,20 @@
     <TargetFrameworks>net45; netstandard2.0</TargetFrameworks>
   </PropertyGroup>
   <PropertyGroup>
-    <VersionPrefix>1.0.0-preview-10</VersionPrefix>
-    <Version>1.0.0-preview-10</Version>
+    <VersionPrefix>1.0.0-preview-11</VersionPrefix>
+    <Version>1.0.0-preview-11</Version>
+    <PackageProjectUrl>https://github.com/Dolfik1/Mappy</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/Dolfik1/Mappy/blob/master/LICENSE</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/Dolfik1/Mappy</RepositoryUrl>
+    <Authors>Nikolay Matyushin</Authors>
+    <Company />
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <PackageReference Include="Slapper.AutoMapper">
+      <Version>2.0.0.9-beta</Version>
+    </PackageReference>
   </ItemGroup>
 </Project>

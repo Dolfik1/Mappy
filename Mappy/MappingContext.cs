@@ -4,6 +4,7 @@ using Mappy.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Abbrs = System.Collections.Generic.IDictionary<string, string>;
 using Items = System.Collections.Generic.IDictionary<string, object>;
 
 namespace Mappy
@@ -13,13 +14,15 @@ namespace Mappy
         private MappyOptions Options { get; }
         private IDictionary<string, ITypeConverter> TypeConverters { get; }
         private IDictionary<int, string[]> ValuesFields { get; }
+        private Abbrs Abbreviations { get; }
 
-        internal MappingContext(MappyOptions options)
+        internal MappingContext(MappyOptions options, Abbrs abbreviations)
         {
             Options = options;
             TypeConverters = new Dictionary<string, ITypeConverter>(
                 StringComparer.Ordinal);
             ValuesFields = new Dictionary<int, string[]>();
+            Abbreviations = abbreviations;
         }
 
         internal T? ConvertNullable<T>(
@@ -197,7 +200,7 @@ namespace Mappy
 
             return values
                 .Where(x => x[pfxWithSign] != null)
-                .Select(x => Convert<T>(pfx,
+                .Select(x => Convert(pfx,
                     Options.PrimitiveCollectionSign, x, null, default(T)));
         }
 
@@ -225,7 +228,8 @@ namespace Mappy
             return values
                 .Where(x => mapper.HasValues(this, pfx, x, Options))
                 .GroupBy(x => x, new IdentifierComparer(pfx, mapper.IdentifierFieldsAndProps))
-                .Select(x => mapper.Map(this, pfx, x.Key, x));
+                // x.Key replaced with x.Last() for compatibility with Slapper (see Should_Use_Last_Item_In_Array test)
+                .Select(x => mapper.Map(this, pfx, x.Last(), x));
         }
 
         internal bool TryGetValueFields(int hashCode, out string[] valueFields)
@@ -237,8 +241,6 @@ namespace Mappy
         {
             ValuesFields.Add(hashCode, valueFields);
         }
-
-
 
         internal string[] GetExistsFieldsForType<T>(
             string prefix,

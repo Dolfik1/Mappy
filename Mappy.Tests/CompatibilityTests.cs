@@ -58,5 +58,54 @@ namespace Mappy.Tests
             Assert.Equal(dictionary2["Phone_Id"], customer.Phone.Id);
             Assert.Equal(dictionary2["Phone_PhoneNumber"], customer.Phone.PhoneNumber);
         }
+
+        class Item
+        {
+            public int Id { get; set; }
+            public string Value { get; set; }
+            public List<Item> Subitems { get; set; }
+        }
+
+        [Fact]
+        public void Should_Use_Last_Item_In_Array()
+        {
+            var dictionary = new Dictionary<string, object>
+            {
+                { "Id", 1 },
+                { "Value", "Test1" },
+                { "Subitems_Id", 1 },
+                { "Subitems_Value", "Test1" },
+            };
+
+            var dictionary2 = new Dictionary<string, object>
+            {
+                { "Id", 1 },
+                { "Value", "Test1" },
+                { "Subitems_Id", 1 },
+                { "Subitems_Value", "Test2" },
+            };
+
+            var data = new List<Dictionary<string, object>>
+            {
+                dictionary,
+                dictionary2
+            };
+
+            var mappy = new Mappy();
+
+            var items = mappy.Map<Item>(data);
+
+            Assert.Single(items);
+            var item = items.Single();
+
+            Assert.Equal(dictionary["Id"], item.Id);
+            Assert.Equal(dictionary["Value"], item.Value);
+
+            Assert.Single(item.Subitems);
+            var subitem = item.Subitems.Single();
+
+            Assert.Equal(dictionary2["Subitems_Id"], subitem.Id);
+            Assert.Equal(dictionary2["Subitems_Value"], subitem.Value);
+        }
     }
 }

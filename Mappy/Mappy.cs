@@ -24,6 +24,13 @@ namespace Mappy
 
         public IEnumerable<T> Map<T>(
             IEnumerable<dynamic> items,
+            Abbrs abbreviations)
+        {
+            return Map<T>(items, _options, abbreviations);
+        }
+
+        public IEnumerable<T> Map<T>(
+            IEnumerable<dynamic> items,
             MappyOptions options)
         {
             return Map<T>(items, options, null);
@@ -41,6 +48,13 @@ namespace Mappy
             Items items)
         {
             return Map<T>(items, _options);
+        }
+
+        public T Map<T>(
+            Items items,
+            Abbrs abbreviations)
+        {
+            return Map<T>(items, _options, abbreviations);
         }
 
         public T Map<T>(
@@ -68,6 +82,13 @@ namespace Mappy
             ItemsEnumerable items)
         {
             return Map<T>(items, _options);
+        }
+
+        public IEnumerable<T> Map<T>(
+            ItemsEnumerable items,
+            Abbrs abbreviations)
+        {
+            return Map<T>(items, _options, abbreviations);
         }
 
         public IEnumerable<T> Map<T>(
@@ -118,7 +139,7 @@ namespace Mappy
                     .Select(dynamicItem => new Dictionary<string, object>(dynamicItem, options.StringComparer));
             }
 
-            var context = new MappingContext(options);
+            var context = new MappingContext(options, abbreviations);
 
             return options.Cache.GetOrCreateTypeMap<T>(options)
                 .MapEnumerable(items, null, context);
