@@ -36,7 +36,6 @@ namespace Mappy.Tests
         [Fact]
         public void Should_Map_Null_Identifier_Correctly()
         {
-
             var dictionary = new Dictionary<string, object>
             {
                 {"CustomerId", 1},
@@ -47,10 +46,8 @@ namespace Mappy.Tests
                 {"Orders_OrderDate", DateTime.Now}
             };
 
-
             var mappy = new Mappy();
             var customer = mappy.Map<Customer>(dictionary);
-
 
             Assert.Equal(dictionary["CustomerId"], customer.CustomerId);
             Assert.Equal(dictionary["FirstName"], customer.FirstName);
@@ -61,7 +58,6 @@ namespace Mappy.Tests
             Assert.Equal(0, order.OrderId);
             Assert.Equal(dictionary["Orders_OrderTotal"], order.OrderTotal);
             Assert.Equal(dictionary["Orders_OrderDate"], order.OrderDate);
-
         }
     }
 }

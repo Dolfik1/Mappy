@@ -5,14 +5,13 @@ namespace Mappy.Converters
         public T Convert<T>(object value)
         {
             if (value == null) return default(T);
-            
+
             var type = typeof(T);
             if (value.GetType() != type)
             {
                 return (T)System.Convert.ChangeType(value, type);
             }
             return (T)value;
-
         }
 
         public bool CanConvert<T>(object value)

@@ -1,5 +1,3 @@
-using System;
-
 namespace Mappy.Converters
 {
     /// <summary>

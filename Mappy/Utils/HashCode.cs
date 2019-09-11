@@ -1,16 +1,11 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace Mappy.Utils
 {
     internal static class HashCode
     {
-        
-        internal static int CombineHashCodes(params int[] hashCodes)
-        {
-            return CombineHashCodes(hashCodes.AsEnumerable());
-        }
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static int CombineHashCodes(IEnumerable<int> hashCodes)
         {
             var hash1 = (5381 << 16) + 5381;
@@ -29,10 +24,12 @@ namespace Mappy.Utils
 
             return hash1 + (hash2 * 1566083941);
         }
-        
-        internal static int CombineHashCodes(int h1, int h2) {
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static int CombineHashCodes(int h1, int h2)
+        {
             // this is where the magic happens
-            return (((h1 << 5) + h1) ^ h2);
+            return ((h1 << 5) + h1) ^ h2;
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using Items = System.Collections.Generic.IDictionary<string, object>;
 
 namespace Mappy
@@ -118,11 +119,11 @@ namespace Mappy
 
             var member = Expression.MemberInit(newValue, bindings);
 
-
             MapExpression = Expression.Lambda<Func<MappingContext, string, IEnumerable<Items>, Items, T>>(
                 member, context, prefix, values, first).Compile();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal T Map(
             MappingContext context,
             string prefix,
@@ -132,12 +133,13 @@ namespace Mappy
             return MapExpression(context, prefix, values, first);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal IEnumerable<T> MapEnumerable(
             IEnumerable<Items> values,
             Items items,
             MappingContext context)
         {
-            return context.ConvertListComplex<T>(
+            return context.ConvertEnumerableComplex(
                 "",
                 "",
                 items,
@@ -145,6 +147,7 @@ namespace Mappy
                 default(List<T>));
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal bool HasValues(
             MappingContext context,
             string prefix,
@@ -169,6 +172,7 @@ namespace Mappy
             return false;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal bool HasKeys(
             MappingContext context,
             string prefix,
@@ -176,13 +180,7 @@ namespace Mappy
             MappyOptions options)
         {
             var valueFields = context.GetExistsFieldsForType<T>(prefix, items, options);
-
-            if (items.Count == 0 || valueFields.Length == 0)
-            {
-                return false;
-            }
-
-            return true;
+            return items.Count != 0 && valueFields.Length != 0;
         }
     }
 }

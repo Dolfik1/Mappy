@@ -4,6 +4,7 @@ using Mappy.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Abbrs = System.Collections.Generic.IDictionary<string, string>;
 using Items = System.Collections.Generic.IDictionary<string, object>;
 
@@ -25,6 +26,7 @@ namespace Mappy
             Abbreviations = abbreviations;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal T? ConvertNullable<T>(
             string prefix,
             string name,
@@ -49,6 +51,7 @@ namespace Mappy
             return converter.Convert<T>(value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal T? ConvertNullableComplex<T>(
             string prefix,
             string name,
@@ -72,6 +75,7 @@ namespace Mappy
             return mapper.Map(this, pfx, items, values);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal T Convert<T>(
             string prefix,
             string name,
@@ -95,6 +99,7 @@ namespace Mappy
             return converter.Convert<T>(value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal T ConvertComplex<T>(
             string prefix,
             string name,
@@ -130,6 +135,7 @@ namespace Mappy
             return mapper.Map(this, pfx, items, values);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal List<T> ConvertList<T>(
             string prefix,
             string name,
@@ -141,6 +147,7 @@ namespace Mappy
                 ?.ToList();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal List<T> ConvertListComplex<T>(
             string prefix,
             string name,
@@ -152,6 +159,7 @@ namespace Mappy
                 ?.ToList();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal T[] ConvertArrayComplex<T>(
             string prefix,
             string name,
@@ -163,6 +171,7 @@ namespace Mappy
                 ?.ToArray();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal T[] ConvertArray<T>(
             string prefix,
             string name,
@@ -174,6 +183,7 @@ namespace Mappy
                 ?.ToArray();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal IEnumerable<T> ConvertEnumerable<T>(
             string prefix,
             string name,
@@ -204,7 +214,8 @@ namespace Mappy
                     Options.PrimitiveCollectionSign, x, null, default(T)));
         }
 
-        private IEnumerable<T> ConvertEnumerableComplex<T>(
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal IEnumerable<T> ConvertEnumerableComplex<T>(
             string prefix,
             string name,
             Items items,
@@ -232,16 +243,19 @@ namespace Mappy
                 .Select(x => mapper.Map(this, pfx, x.Last(), x));
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal bool TryGetValueFields(int hashCode, out string[] valueFields)
         {
             return ValuesFields.TryGetValue(hashCode, out valueFields);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal void AddValueFields(int hashCode, string[] valueFields)
         {
             ValuesFields.Add(hashCode, valueFields);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal string[] GetExistsFieldsForType<T>(
             string prefix,
             Items items,

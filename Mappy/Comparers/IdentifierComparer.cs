@@ -23,7 +23,6 @@ namespace Mappy.Comparers
                 return false;
             }
 
-
             foreach (var id in _identifierFieldsAndProps)
             {
                 x.TryGetValue(id, out var valueX);

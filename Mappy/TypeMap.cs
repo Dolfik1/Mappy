@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace Mappy
 {
@@ -12,7 +13,7 @@ namespace Mappy
 
         internal TypeMap(Type type, Type idAttribute)
         {
-            bool IsIdentifier(string fieldOrPropName, Type fieldOrPropType, MemberInfo mi)
+            bool IsIdentifier(string fieldOrPropName, MemberInfo mi)
             {
                 const StringComparison sc = StringComparison.InvariantCultureIgnoreCase;
                 return
@@ -22,23 +23,29 @@ namespace Mappy
                     || mi.GetCustomAttribute(idAttribute, true) != null;
             }
 
-            FieldsAndProps = GetFields(type).Select(x => x.Name)
-                .Concat(GetProperties(type).Select(x => x.Name))
+            FieldsAndProps = GetFields(type)
+                .Select(x => x.Name)
+                .Concat(GetProperties(type)
+                    .Select(x => x.Name))
                 .ToArray();
 
             IdentifierFieldsAndProps =
-                GetFields(type).Where(x => IsIdentifier(x.Name, x.FieldType, x))
+                GetFields(type)
+                    .Where(x => IsIdentifier(x.Name, x))
                     .Select(x => x.Name)
-                    .Concat(GetProperties(type).Where(x => IsIdentifier(x.Name, x.PropertyType, x))
+                    .Concat(GetProperties(type)
+                        .Where(x => IsIdentifier(x.Name, x))
                         .Select(x => x.Name))
                     .ToArray();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal IEnumerable<FieldInfo> GetFields(Type type)
         {
             return type.GetFields();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal IEnumerable<PropertyInfo> GetProperties(Type type)
         {
             return type

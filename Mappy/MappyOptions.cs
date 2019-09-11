@@ -22,7 +22,6 @@ namespace Mappy
 
         public IReadOnlyCollection<ITypeConverter> Converters { get; }
 
-
         public MappyOptions(
             string delimiter = "_",
             Type idAttributeType = null,

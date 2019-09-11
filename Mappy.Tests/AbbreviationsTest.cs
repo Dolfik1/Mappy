@@ -51,7 +51,6 @@ namespace Mappy.Tests
 
             Assert.Equal(dictionary["Ph_Id"], customer.Phone.Id);
             Assert.Equal(dictionary["Ph_PhoneNumber"], customer.Phone.PhoneNumber);
-
         }
     }
 }

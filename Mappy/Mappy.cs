@@ -115,7 +115,6 @@ namespace Mappy
                 .Select(dynamicItem => dynamicItem as IDictionary<string, object>)
                 .Where(x => x != null);
             return MapInternal<T>(dictionary, options, abbreviations);
-
         }
 
         internal IEnumerable<T> MapInternal<T>(
