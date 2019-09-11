@@ -11,7 +11,7 @@ namespace Mappy
 {
     public class TypeMap<T> : TypeMap
     {
-        internal Func<MappingContext, string, IEnumerable<Items>, Items, T> MapExpression { get; }
+        internal Func<MappingContext, string, List<Items>, Items, T> MapExpression { get; }
 
         internal TypeMap(Type idAttribute)
             : base(typeof(T), idAttribute)
@@ -20,7 +20,7 @@ namespace Mappy
 
             var context = Expression.Parameter(typeof(MappingContext));
             var prefix = Expression.Parameter(typeof(string));
-            var values = Expression.Parameter(typeof(IEnumerable<Items>));
+            var values = Expression.Parameter(typeof(List<Items>));
             var first = Expression.Parameter(typeof(Items));
 
             var newValue = Expression.New(type);
@@ -132,9 +132,8 @@ namespace Mappy
                 .Select(field => Process(field.Name, field.FieldType, field)));
 
             var member = Expression.MemberInit(newValue, bindings);
-            Console.WriteLine(Expression.Lambda<Func<MappingContext, string, IEnumerable<Items>, Items, T>>(
-                member, context, prefix, values, first));
-            MapExpression = Expression.Lambda<Func<MappingContext, string, IEnumerable<Items>, Items, T>>(
+
+            MapExpression = Expression.Lambda<Func<MappingContext, string, List<Items>, Items, T>>(
                 member, context, prefix, values, first).Compile();
         }
 
@@ -143,18 +142,18 @@ namespace Mappy
             MappingContext context,
             string prefix,
             Items first,
-            IEnumerable<Items> values)
+            List<Items> values)
         {
             return MapExpression(context, prefix, values, first);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal IEnumerable<T> MapEnumerable(
-            IEnumerable<Items> values,
+        internal List<T> MapList(
+            List<Items> values,
             Items items,
             MappingContext context)
         {
-            return context.ConvertEnumerableComplex(
+            return context.ConvertListComplex(
                 "",
                 "",
                 items,

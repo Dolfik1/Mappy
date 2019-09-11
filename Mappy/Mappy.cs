@@ -141,7 +141,7 @@ namespace Mappy
             var context = new MappingContext(options, abbreviations);
 
             return options.Cache.GetOrCreateTypeMap<T>(options)
-                .MapEnumerable(items, null, context);
+                .MapList(items.ToList(), null, context);
         }
     }
 }

@@ -58,7 +58,7 @@ namespace Mappy
             string prefix,
             string name,
             Items items,
-            IEnumerable<Items> values,
+            List<Items> values,
             T? defaultValue)
             where T : struct
         {
@@ -82,7 +82,7 @@ namespace Mappy
             string prefix,
             string name,
             Items items,
-            IEnumerable<Items> values,
+            List<Items> values,
             T defaultValue)
         {
             var pfx = prefix + name;
@@ -106,7 +106,7 @@ namespace Mappy
             string prefix,
             string name,
             Items items,
-            IEnumerable<Items> values,
+            List<Items> values,
             T defaultValue)
         {
             var pfx = string.IsNullOrEmpty(prefix)
@@ -137,39 +137,16 @@ namespace Mappy
             return mapper.Map(this, pfx, items, values);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal List<T> ConvertList<T>(
-            string prefix,
-            string name,
-            Items items,
-            IEnumerable<Items> values,
-            IEnumerable<T> defaultValue)
-        {
-            return ConvertEnumerable(prefix, name, items, values, defaultValue)
-                ?.ToList();
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal List<T> ConvertListComplex<T>(
-            string prefix,
-            string name,
-            Items items,
-            IEnumerable<Items> values,
-            IEnumerable<T> defaultValue)
-        {
-            return ConvertEnumerableComplex(prefix, name, items, values, defaultValue)
-                ?.ToList();
-        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal T[] ConvertArrayComplex<T>(
             string prefix,
             string name,
             Items items,
-            IEnumerable<Items> values,
+            List<Items> values,
             IEnumerable<T> defaultValue)
         {
-            return ConvertEnumerableComplex(prefix, name, items, values, defaultValue)
+            return ConvertListComplex(prefix, name, items, values, defaultValue)
                 ?.ToArray();
         }
 
@@ -178,7 +155,7 @@ namespace Mappy
             string prefix,
             string name,
             Items items,
-            IEnumerable<Items> values,
+            List<Items> values,
             IEnumerable<T> defaultValue)
         {
             return ConvertEnumerable(prefix, name, items, values, defaultValue)
@@ -186,11 +163,23 @@ namespace Mappy
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal List<T> ConvertList<T>(
+            string prefix,
+            string name,
+            Items items,
+            List<Items> values,
+            IEnumerable<T> defaultValue)
+        {
+            return ConvertEnumerable(prefix, name, items, values, defaultValue)
+                ?.AsList();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal IEnumerable<T> ConvertEnumerable<T>(
             string prefix,
             string name,
             Items items,
-            IEnumerable<Items> values,
+            List<Items> values,
             IEnumerable<T> defaultValue)
         {
             var pfx = string.IsNullOrEmpty(prefix)
@@ -207,21 +196,26 @@ namespace Mappy
 
             if (!items.ContainsKey(pfxWithSign))
             {
-                return defaultValue;
+                return defaultValue?.AsList();
             }
 
-            return values
-                .Where(x => x[pfxWithSign] != null)
-                .Select(x => Convert(pfx,
-                    Options.PrimitiveCollectionSign, x, null, default(T)));
+            var result = new List<T>(values.Count);
+            for (var i = 0; i < values.Count; i++)
+            {
+                if (values[i][pfxWithSign] == null) continue;
+                result.Add(Convert(pfx,
+                    Options.PrimitiveCollectionSign, values[i], null, default(T)));
+            }
+
+            return result;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal IEnumerable<T> ConvertEnumerableComplex<T>(
+        internal List<T> ConvertListComplex<T>(
             string prefix,
             string name,
             Items items,
-            IEnumerable<Items> values,
+            List<Items> values,
             IEnumerable<T> defaultValue)
         {
             var pfx = string.IsNullOrEmpty(prefix)
@@ -235,14 +229,34 @@ namespace Mappy
 
             if (!string.IsNullOrEmpty(pfx) && !mapper.HasKeys(this, pfx, items, Options))
             {
-                return defaultValue;
+                return defaultValue?.AsList();
             }
 
-            return values
-                .Where(x => mapper.HasValues(this, pfx, x, Options))
-                .GroupBy(x => x, new IdentifierComparer(pfx, mapper.IdentifierFieldsAndProps))
+            var group = new Dictionary<int, List<Items>>();
+            var comparer = new IdentifierComparer(pfx, mapper.IdentifierFieldsAndProps);
+            for (var i = 0; i < values.Count; i++)
+            {
+                if (!mapper.HasValues(this, pfx, values[i], Options)) continue;
+                var hc = comparer.GetHashCode(values[i]);
+
+                if (group.ContainsKey(hc))
+                {
+                    group[hc].Add(values[i]);
+                }
+                else
+                {
+                    group.Add(hc, new List<Items> { values[i] });
+                }
+            }
+
+            var result = new List<T>(group.Count);
+            foreach (var x in group)
+            {
                 // x.Key replaced with x.Last() for compatibility with Slapper (see Should_Use_Last_Item_In_Array test)
-                .Select(x => mapper.Map(this, pfx, x.Last(), x));
+                result.Add(mapper.Map(this, pfx, x.Value[x.Value.Count - 1], x.Value));
+            }
+
+            return result;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
