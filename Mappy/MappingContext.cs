@@ -43,7 +43,9 @@ namespace Mappy
             }
 
             if (TypeConverters.TryGetValue(pfx, out var converter))
+            {
                 return converter.Convert<T>(value);
+            }
 
             converter = Options.Converters.First(x => x.CanConvert<T>(value));
             TypeConverters.Add(pfx, converter);

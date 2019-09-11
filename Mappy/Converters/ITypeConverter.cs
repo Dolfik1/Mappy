@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+
 namespace Mappy.Converters
 {
     /// <summary>
@@ -11,6 +13,7 @@ namespace Mappy.Converters
         /// <param name="value">Value to convert.</param>
         /// <typeparam name="T">Type the value is to be converted to.</typeparam>
         /// <returns>Converted value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         T Convert<T>(object value);
 
         /// <summary>
@@ -19,6 +22,7 @@ namespace Mappy.Converters
         /// <param name="value">Value to convert.</param>
         /// <typeparam name="T">Type the value needs to be converted to.</typeparam>
         /// <returns>Boolean response.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         bool CanConvert<T>(object value);
 
         /// <summary>

@@ -10,6 +10,7 @@ namespace Mappy.Benchmark
         public const int Iterations = 50000;
         private Mappy Mappy;
         private Mappy MappyBaseConverterOnly;
+        private IEnumerable<IDictionary<string, object>> TestData { get; set; }
 
         [GlobalSetup]
         public void Setup()
@@ -32,12 +33,14 @@ namespace Mappy.Benchmark
 
             Slapper.AutoMapper.Map<Customer>(
                 GenerateData(1).First());
+
+            TestData = GenerateData(Iterations).ToList();
         }
 
         [Benchmark]
         public void StraightBenchmark()
         {
-            GenerateData(Iterations)
+            TestData
                 .Select(x => new Customer
                 {
                     CustomerId = (int)x["CustomerId"],
@@ -50,7 +53,7 @@ namespace Mappy.Benchmark
         [Benchmark]
         public void GroupByBenchmark()
         {
-            GenerateData(Iterations)
+            TestData
                 .GroupBy(x => x["CustomerId"])
                 .Select(x =>
                 {
@@ -68,25 +71,26 @@ namespace Mappy.Benchmark
         [Benchmark]
         public void MappyBenchmark()
         {
-            Mappy.Map<Customer>(GenerateData(Iterations))
+            Mappy.Map<Customer>(TestData)
                 .ToList();
         }
 
         [Benchmark]
         public void MappyBenchmarkBaseConverterOnly()
         {
-            MappyBaseConverterOnly.Map<Customer>(GenerateData(Iterations))
+            MappyBaseConverterOnly.Map<Customer>(TestData)
                 .ToList();
         }
 
+#if SLAPPER_BENCHMARK
         [Benchmark]
         public void SlapperBenchmark()
         {
             // Act
-            Slapper.AutoMapper.Map<Customer>(GenerateData(Iterations))
+            Slapper.AutoMapper.Map<Customer>(TestData)
                 .ToList();
         }
-
+#endif
         private IEnumerable<IDictionary<string, object>> GenerateData(int iterations)
         {
             for (int i = 0; i < iterations; i++)

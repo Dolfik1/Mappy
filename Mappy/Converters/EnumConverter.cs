@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 
 namespace Mappy.Converters
 {
@@ -15,13 +16,14 @@ namespace Mappy.Converters
         /// <param name="value">Value to convert.</param>
         /// <param name="type">Type the value is to be converted to.</param>
         /// <returns>Converted value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T Convert<T>(object value)
         {
             if (value == null)
             {
                 return default(T);
             }
-            
+
             var type = typeof(T);
             return (T)Enum.Parse(type, value.ToString());
         }
@@ -32,6 +34,7 @@ namespace Mappy.Converters
         /// <param name="value">Value to convert.</param>
         /// <param name="type">Type the value needs to be converted to.</param>
         /// <returns>Boolean response.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool CanConvert<T>(object value)
         {
             return typeof(T).IsEnum;

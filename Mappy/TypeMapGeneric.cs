@@ -94,9 +94,23 @@ namespace Mappy
                     throw new Exception($"Convert method with name \"{methodName}\" does not found.");
                 }
 
-                var defaultValue = Expression.PropertyOrField(
-                    Expression.Constant(defaultObject),
-                    propOrFieldName);
+                Expression defaultValue;
+                if (mi is PropertyInfo pi)
+                {
+                    defaultValue = Expression.Constant(
+                        pi.GetValue(defaultObject), propOrFieldType);
+                }
+                else if (mi is FieldInfo fi)
+                {
+                    defaultValue = Expression.Constant(
+                        fi.GetValue(defaultObject), propOrFieldType);
+                }
+                else
+                {
+                    defaultValue = Expression.PropertyOrField(
+                        Expression.Constant(defaultObject),
+                        propOrFieldName);
+                }
 
                 var convertCall = Expression.Call(
                     context,
@@ -118,7 +132,8 @@ namespace Mappy
                 .Select(field => Process(field.Name, field.FieldType, field)));
 
             var member = Expression.MemberInit(newValue, bindings);
-
+            Console.WriteLine(Expression.Lambda<Func<MappingContext, string, IEnumerable<Items>, Items, T>>(
+                member, context, prefix, values, first));
             MapExpression = Expression.Lambda<Func<MappingContext, string, IEnumerable<Items>, Items, T>>(
                 member, context, prefix, values, first).Compile();
         }
