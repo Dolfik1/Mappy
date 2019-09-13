@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <DefineConstants>SLAPPER_BENCHMARK</DefineConstants>
+    <DefineConstants>SLAPPER_BENCHMARKs</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>

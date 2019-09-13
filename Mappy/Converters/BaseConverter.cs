@@ -1,10 +1,8 @@
-using System.Runtime.CompilerServices;
-
 namespace Mappy.Converters
 {
     public struct BaseConverter : ITypeConverter
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+
         public T Convert<T>(object value)
         {
             if (value == null) return default(T);
@@ -17,7 +15,7 @@ namespace Mappy.Converters
             return (T)value;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+
         public bool CanConvert<T>(object value)
         {
             return true;

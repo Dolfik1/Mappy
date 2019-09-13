@@ -1,7 +1,6 @@
 ﻿using Mappy.Utils;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Mappy.Comparers
 {
@@ -11,9 +10,11 @@ namespace Mappy.Comparers
 
         public IdentifierComparer(string prefix, string[] identifierFieldsAndProps)
         {
-            _identifierFieldsAndProps = identifierFieldsAndProps
-                .Select(x => prefix + x)
-                .ToArray();
+            _identifierFieldsAndProps = new string[identifierFieldsAndProps.Length];
+            for (var i = 0; i < identifierFieldsAndProps.Length; i++)
+            {
+                _identifierFieldsAndProps[i] = prefix + identifierFieldsAndProps[i];
+            }
         }
 
         public bool Equals(IDictionary<string, object> x, IDictionary<string, object> y)

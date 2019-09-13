@@ -232,7 +232,7 @@ namespace Mappy
                 return defaultValue?.AsList();
             }
 
-            var group = new Dictionary<int, List<Items>>();
+            var group = new Dictionary<int, List<Items>>(values.Count);
             var comparer = new IdentifierComparer(pfx, mapper.IdentifierFieldsAndProps);
             for (var i = 0; i < values.Count; i++)
             {

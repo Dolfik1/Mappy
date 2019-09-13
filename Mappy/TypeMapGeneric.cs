@@ -1,14 +1,17 @@
-﻿using System;
+﻿using FastExpressionCompiler;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using static System.Linq.Expressions.Expression;
 using Items = System.Collections.Generic.IDictionary<string, object>;
 
 namespace Mappy
 {
+    struct Example { }
     public class TypeMap<T> : TypeMap
     {
         internal Func<MappingContext, string, List<Items>, Items, T> MapExpression { get; }
@@ -16,14 +19,16 @@ namespace Mappy
         internal TypeMap(Type idAttribute)
             : base(typeof(T), idAttribute)
         {
+            Expression.New(typeof(Example));
+
             var type = typeof(T);
 
-            var context = Expression.Parameter(typeof(MappingContext));
-            var prefix = Expression.Parameter(typeof(string));
-            var values = Expression.Parameter(typeof(List<Items>));
-            var first = Expression.Parameter(typeof(Items));
+            var context = Parameter(typeof(MappingContext));
+            var prefix = Parameter(typeof(string));
+            var values = Parameter(typeof(List<Items>));
+            var first = Parameter(typeof(Items));
 
-            var newValue = Expression.New(type);
+            var newValue = New(type);
 
             var defaultObject = Activator.CreateInstance<T>();
 
@@ -97,31 +102,31 @@ namespace Mappy
                 Expression defaultValue;
                 if (mi is PropertyInfo pi)
                 {
-                    defaultValue = Expression.Constant(
+                    defaultValue = Constant(
                         pi.GetValue(defaultObject), propOrFieldType);
                 }
                 else if (mi is FieldInfo fi)
                 {
-                    defaultValue = Expression.Constant(
+                    defaultValue = Constant(
                         fi.GetValue(defaultObject), propOrFieldType);
                 }
                 else
                 {
-                    defaultValue = Expression.PropertyOrField(
-                        Expression.Constant(defaultObject),
+                    defaultValue = PropertyOrField(
+                        Constant(defaultObject),
                         propOrFieldName);
                 }
 
-                var convertCall = Expression.Call(
+                var convertCall = Call(
                     context,
                     convertMethod.MakeGenericMethod(underlyingType),
                     prefix,
-                    Expression.Constant(propOrFieldName),
+                    Constant(propOrFieldName),
                     first,
                     values,
                     defaultValue);
 
-                return Expression.Bind(mi, convertCall);
+                return Bind(mi, convertCall);
             }
 
             var bindings = GetProperties(type)
@@ -131,10 +136,10 @@ namespace Mappy
             bindings.AddRange(GetFields(type)
                 .Select(field => Process(field.Name, field.FieldType, field)));
 
-            var member = Expression.MemberInit(newValue, bindings);
+            var member = MemberInit(newValue, bindings.ToArray());
 
-            MapExpression = Expression.Lambda<Func<MappingContext, string, List<Items>, Items, T>>(
-                member, context, prefix, values, first).Compile();
+            MapExpression = Lambda<Func<MappingContext, string, List<Items>, Items, T>>(
+                member, context, prefix, values, first).CompileFast();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
