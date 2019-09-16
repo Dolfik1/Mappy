@@ -74,14 +74,9 @@ namespace Mappy.Comparers
 
                 var hc = value?.GetHashCode() ?? 0;
 
-                if (hashCode == 0)
-                {
-                    hashCode = hc;
-                }
-                else
-                {
-                    HashCode.CombineHashCodes(hc, hashCode);
-                }
+                hashCode = hashCode == 0
+                    ? hc
+                    : HashCode.CombineHashCodes(hc, hashCode);
             }
 
             return hashCode;

@@ -232,20 +232,21 @@ namespace Mappy
                 return defaultValue?.AsList();
             }
 
-            var group = new Dictionary<int, List<Items>>(values.Count);
-            var comparer = new IdentifierComparer(pfx, mapper.IdentifierFieldsAndProps);
+            var group = new Dictionary<Items, List<Items>>(
+                values.Count,
+                new IdentifierComparer(pfx, mapper.IdentifierFieldsAndProps));
+
             for (var i = 0; i < values.Count; i++)
             {
                 if (!mapper.HasValues(this, pfx, values[i], Options)) continue;
-                var hc = comparer.GetHashCode(values[i]);
-
-                if (group.ContainsKey(hc))
+                var v = values[i];
+                if (group.ContainsKey(v))
                 {
-                    group[hc].Add(values[i]);
+                    group[values[i]].Add(v);
                 }
                 else
                 {
-                    group.Add(hc, new List<Items> { values[i] });
+                    group.Add(v, new List<Items> { values[i] });
                 }
             }
 
