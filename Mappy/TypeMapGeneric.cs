@@ -11,7 +11,6 @@ using Items = System.Collections.Generic.IDictionary<string, object>;
 
 namespace Mappy
 {
-    struct Example { }
     public class TypeMap<T> : TypeMap
     {
         internal Func<MappingContext, string, List<Items>, Items, T> MapExpression { get; }
@@ -19,8 +18,6 @@ namespace Mappy
         internal TypeMap(Type idAttribute)
             : base(typeof(T), idAttribute)
         {
-            Expression.New(typeof(Example));
-
             var type = typeof(T);
 
             var context = Parameter(typeof(MappingContext));
@@ -41,10 +38,11 @@ namespace Mappy
                     && typeof(IEnumerable).IsAssignableFrom(propOrFieldType);
 
                 var isArray = propOrFieldType.IsArray;
-
+                var isGeneric = propOrFieldType.IsGenericType;
+                
                 var underlyingType = propOrFieldType;
 
-                if (isEnumerable || isArray)
+                if (isGeneric || isArray)
                 {
                     underlyingType =
                         isArray
@@ -117,9 +115,14 @@ namespace Mappy
                         propOrFieldName);
                 }
 
+                var convertMethodGeneric =
+                    isArray || isEnumerable || nullableType != null
+                        ? convertMethod.MakeGenericMethod(underlyingType)
+                        : convertMethod.MakeGenericMethod(propOrFieldType);
+
                 var convertCall = Call(
                     context,
-                    convertMethod.MakeGenericMethod(underlyingType),
+                    convertMethodGeneric,
                     prefix,
                     Constant(propOrFieldName),
                     first,

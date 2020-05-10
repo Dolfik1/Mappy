@@ -20,7 +20,7 @@ namespace Mappy
 
         public string PrimitiveCollectionSign { get; }
 
-        public IReadOnlyCollection<ITypeConverter> Converters { get; }
+        public IReadOnlyCollection<ITypeConverter> Converters { get; private set; }
 
         public MappyOptions(
             string delimiter = "_",
@@ -55,6 +55,13 @@ namespace Mappy
 
             Converters = converters
                 .OrderBy(x => x.Order)
+                .ToList();
+        }
+
+        public void AddConverter(ITypeConverter converter)
+        {
+            Converters.AsList().Add(converter);
+            Converters = Converters.OrderBy(x => x.Order)
                 .ToList();
         }
 

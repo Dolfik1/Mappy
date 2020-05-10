@@ -84,7 +84,6 @@ namespace Mappy.Tests
                 {"Orders_OrderTotal", 50.50m}
             };
 
-
             var mappy = new Mappy();
 
             // Act
