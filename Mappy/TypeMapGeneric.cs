@@ -6,6 +6,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using static System.Linq.Expressions.Expression;
 using Items = System.Collections.Generic.IDictionary<string, object>;
 
@@ -20,16 +21,20 @@ namespace Mappy
         {
             var type = typeof(T);
 
+            var props = GetProperties(type);
+            var fields = GetFields(type);
+
             var context = Parameter(typeof(MappingContext));
             var prefix = Parameter(typeof(string));
             var values = Parameter(typeof(List<Items>));
             var first = Parameter(typeof(Items));
 
-            var newValue = New(type);
+            var constructorParams = ConstructorToUse?.GetParameters();
+            var defaultObject = 
+                (constructorParams?.Length ?? 0) == 0 
+                ? Activator.CreateInstance<T>() : default;
 
-            var defaultObject = Activator.CreateInstance<T>();
-
-            MemberBinding Process(
+            (MethodCallExpression, MemberInfo) Process(
                 string propOrFieldName,
                 Type propOrFieldType,
                 MemberInfo mi)
@@ -98,21 +103,28 @@ namespace Mappy
                 }
 
                 Expression defaultValue;
-                if (mi is PropertyInfo pi)
+                if (defaultObject != null)
                 {
-                    defaultValue = Constant(
-                        pi.GetValue(defaultObject), propOrFieldType);
-                }
-                else if (mi is FieldInfo fi)
-                {
-                    defaultValue = Constant(
-                        fi.GetValue(defaultObject), propOrFieldType);
+                    if (mi is PropertyInfo pi)
+                    {
+                        defaultValue = Constant(
+                            pi.GetValue(defaultObject), propOrFieldType);
+                    }
+                    else if (mi is FieldInfo fi)
+                    {
+                        defaultValue = Constant(
+                            fi.GetValue(defaultObject), propOrFieldType);
+                    }
+                    else
+                    {
+                        defaultValue = PropertyOrField(
+                            Constant(defaultObject),
+                            propOrFieldName);
+                    }
                 }
                 else
                 {
-                    defaultValue = PropertyOrField(
-                        Constant(defaultObject),
-                        propOrFieldName);
+                    defaultValue = Default(propOrFieldType);
                 }
 
                 var convertMethodGeneric =
@@ -129,20 +141,54 @@ namespace Mappy
                     values,
                     defaultValue);
 
-                return Bind(mi, convertCall);
+                // return Bind(mi, convertCall);
+                return (convertCall, mi);
             }
 
-            var bindings = GetProperties(type)
+            var converts =
+                props
                 .Select(property => Process(property.Name, property.PropertyType, property))
                 .ToList();
 
-            bindings.AddRange(GetFields(type)
+            converts.AddRange(fields
                 .Select(field => Process(field.Name, field.FieldType, field)));
 
-            var member = MemberInit(newValue, bindings.ToArray());
+            var constructorArguments =
+                constructorParams?.Select(x =>
+                {
+                    var converter = 
+                        converts.First(c =>
+                            c.Item2.Name.Equals(x.Name, StringComparison.InvariantCultureIgnoreCase));
+                    converts.Remove(converter);
+                    return converter.Item1;
+                });
+
+            NewExpression newValue;
+            if (IsValueType || ConstructorToUse == null || constructorParams == null)
+            {
+                newValue = New(type);
+            }
+            else
+            {
+                newValue = New(ConstructorToUse, constructorArguments);
+            }
+
+            Expression expr;
+            if (converts.Count > 0)
+            {
+                var bindings = converts
+                    .Select(t => (MemberBinding)Bind(t.Item2, t.Item1));
+            
+                expr = MemberInit(newValue, bindings.ToArray());
+            }
+            else
+            {
+                expr = newValue;
+            }
 
             MapExpression = Lambda<Func<MappingContext, string, List<Items>, Items, T>>(
-                member, context, prefix, values, first).CompileFast();
+                expr, context, prefix, values, first).CompileFast();
+            
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
