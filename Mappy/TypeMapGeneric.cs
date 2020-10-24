@@ -1,4 +1,4 @@
-﻿using FastExpressionCompiler;
+using FastExpressionCompiler;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -76,11 +76,20 @@ namespace Mappy
                 }
                 else if (isEnumerable)
                 {
-                    methodName = isComplex
-                        ? nameof(MappingContext.ConvertListComplex)
-                        : nameof(MappingContext.ConvertList);
-                }
-                else if (nullableType != null)
+                    if (propOrFieldType.GetGenericTypeDefinition() == typeof(SortedSet<>))
+                    {
+                        methodName = isComplex
+                            ? nameof(MappingContext.ConvertSortedSetComplex)
+                            : nameof(MappingContext.ConvertSortedSet);
+                    }
+                    else
+					{
+						methodName = isComplex
+							? nameof(MappingContext.ConvertListComplex)
+							: nameof(MappingContext.ConvertList);
+					}
+				}
+				else if (nullableType != null)
                 {
                     methodName = isComplex
                         ? nameof(MappingContext.ConvertNullableComplex)
