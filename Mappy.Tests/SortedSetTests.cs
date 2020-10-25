@@ -20,19 +20,6 @@ namespace Mappy.Tests
             public decimal OrderTotal { get; set; }
         }
 
-        enum UserSkill
-        {
-            SkillA = 1,
-            SkillB = 2,
-            SkillC = 3
-        }
-
-        class User
-        {
-            public int Id { get; set; }
-            public UserSkill[] Skills { get; set; }
-        }
-
         [Fact]
         public void Can_Map_To_SortedSet()
         {
