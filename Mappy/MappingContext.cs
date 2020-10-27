@@ -158,7 +158,7 @@ namespace Mappy
             List<Items> values,
             IEnumerable<T> defaultValue)
         {
-            return ConvertEnumerable(prefix, name, items, values, defaultValue)
+            return ConvertCollection(prefix, name, items, values, defaultValue, new List<T>(values.Count))
                 ?.ToArray();
         }
 
@@ -170,7 +170,7 @@ namespace Mappy
             List<Items> values,
             IEnumerable<T> defaultValue)
         {
-            return ConvertEnumerable(prefix, name, items, values, defaultValue)
+            return ConvertCollection(prefix, name, items, values, defaultValue, new List<T>(values.Count))
                 ?.AsList();
         }
 
@@ -182,16 +182,17 @@ namespace Mappy
             List<Items> values,
             IEnumerable<T> defaultValue)
         {
-            return new SortedSet<T>(ConvertEnumerable(prefix, name, items, values, defaultValue) ?? Enumerable.Empty<T>());
+            return (SortedSet<T>)ConvertCollection(prefix, name, items, values, defaultValue, new SortedSet<T>());
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal IEnumerable<T> ConvertEnumerable<T>(
+        internal ICollection<T> ConvertCollection<T>(
             string prefix,
             string name,
             Items items,
             List<Items> values,
-            IEnumerable<T> defaultValue)
+            IEnumerable<T> defaultValue,
+            ICollection<T> result)
         {
             var pfx = string.IsNullOrEmpty(prefix)
                 && string.IsNullOrEmpty(name) ? ""
@@ -199,7 +200,7 @@ namespace Mappy
 
             if (items.TryGetValue(pfx, out var arrayValue))
             {
-                return (IEnumerable<T>)arrayValue;
+                return (ICollection<T>)arrayValue;
             }
 
             pfx += Options.Delimiter;
@@ -210,7 +211,6 @@ namespace Mappy
                 return defaultValue?.AsList();
             }
 
-            var result = new List<T>(values.Count);
             for (var i = 0; i < values.Count; i++)
             {
                 if (values[i][pfxWithSign] == null) continue;
