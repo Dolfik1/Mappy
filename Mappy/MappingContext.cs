@@ -158,7 +158,7 @@ namespace Mappy
             List<Items> values,
             IEnumerable<T> defaultValue)
         {
-            return ConvertEnumerable(prefix, name, items, values, defaultValue)
+            return ConvertCollection(prefix, name, items, values, defaultValue, new List<T>(values.Count))
                 ?.ToArray();
         }
 
@@ -170,17 +170,29 @@ namespace Mappy
             List<Items> values,
             IEnumerable<T> defaultValue)
         {
-            return ConvertEnumerable(prefix, name, items, values, defaultValue)
+            return ConvertCollection(prefix, name, items, values, defaultValue, new List<T>(values.Count))
                 ?.AsList();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal IEnumerable<T> ConvertEnumerable<T>(
+        internal SortedSet<T> ConvertSortedSet<T>(
             string prefix,
             string name,
             Items items,
             List<Items> values,
             IEnumerable<T> defaultValue)
+        {
+            return (SortedSet<T>)ConvertCollection(prefix, name, items, values, defaultValue, new SortedSet<T>());
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal ICollection<T> ConvertCollection<T>(
+            string prefix,
+            string name,
+            Items items,
+            List<Items> values,
+            IEnumerable<T> defaultValue,
+            ICollection<T> result)
         {
             var pfx = string.IsNullOrEmpty(prefix)
                 && string.IsNullOrEmpty(name) ? ""
@@ -188,7 +200,7 @@ namespace Mappy
 
             if (items.TryGetValue(pfx, out var arrayValue))
             {
-                return (IEnumerable<T>)arrayValue;
+                return (ICollection<T>)arrayValue;
             }
 
             pfx += Options.Delimiter;
@@ -199,7 +211,6 @@ namespace Mappy
                 return defaultValue?.AsList();
             }
 
-            var result = new List<T>(values.Count);
             for (var i = 0; i < values.Count; i++)
             {
                 if (values[i][pfxWithSign] == null) continue;
@@ -251,6 +262,56 @@ namespace Mappy
             }
 
             var result = new List<T>(group.Count);
+            foreach (var x in group)
+            {
+                // x.Key replaced with x.Last() for compatibility with Slapper (see Should_Use_Last_Item_In_Array test)
+                result.Add(mapper.Map(this, pfx, x.Value[x.Value.Count - 1], x.Value));
+            }
+
+            return result;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal SortedSet<T> ConvertSortedSetComplex<T>(
+            string prefix,
+            string name,
+            Items items,
+            List<Items> values,
+            IEnumerable<T> defaultValue)
+        {
+            var pfx = string.IsNullOrEmpty(prefix)
+                && string.IsNullOrEmpty(name) ? ""
+                : prefix + name + Options.Delimiter;
+
+            var mapper = Options.Cache
+                .GetOrCreateTypeMap<T>(Options);
+
+            // items can be null only when MapEnumerable called
+
+            if (!string.IsNullOrEmpty(pfx) && !mapper.HasKeys(this, pfx, items, Options))
+            {
+                return new SortedSet<T>(defaultValue ?? Enumerable.Empty<T>());
+            }
+
+            var group = new Dictionary<Items, List<Items>>(
+                values.Count,
+                new IdentifierComparer(pfx, mapper.IdentifierFieldsAndProps));
+
+            foreach (var value in values)
+            {
+                if (!mapper.HasValues(this, pfx, value, Options)) continue;
+                if (group.ContainsKey(value))
+                {
+                    group[value].Add(value);
+                }
+                else
+                {
+                    group.Add(value, new List<Items> { value });
+                }
+            }
+
+
+            var result = new SortedSet<T>();
             foreach (var x in group)
             {
                 // x.Key replaced with x.Last() for compatibility with Slapper (see Should_Use_Last_Item_In_Array test)
