@@ -5,7 +5,7 @@ namespace Mappy.Converters
 
         public T Convert<T>(object value)
         {
-            if (value == null) return default(T);
+            if (value == null) return default;
 
             var type = typeof(T);
             if (value.GetType() != type)

@@ -1,6 +1,7 @@
 ﻿using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Validators;
 using System.Linq;
+using BenchmarkDotNet.Diagnosers;
 
 namespace Mappy.Benchmark
 {
@@ -8,11 +9,12 @@ namespace Mappy.Benchmark
     {
         public AllowNonOptimized()
         {
-            Add(JitOptimizationsValidator.DontFailOnError); // ALLOW NON-OPTIMIZED DLLS
+            AddDiagnoser(MemoryDiagnoser.Default);
+            AddValidator(JitOptimizationsValidator.DontFailOnError); // ALLOW NON-OPTIMIZED DLLS
 
-            Add(DefaultConfig.Instance.GetLoggers().ToArray()); // manual config has no loggers by default
-            Add(DefaultConfig.Instance.GetExporters().ToArray()); // manual config has no exporters by default
-            Add(DefaultConfig.Instance.GetColumnProviders().ToArray()); // manual config has no columns by default
+            AddLogger(DefaultConfig.Instance.GetLoggers().ToArray()); // manual config has no loggers by default
+            AddExporter(DefaultConfig.Instance.GetExporters().ToArray()); // manual config has no exporters by default
+            AddColumnProvider(DefaultConfig.Instance.GetColumnProviders().ToArray()); // manual config has no columns by default
         }
     }
 }

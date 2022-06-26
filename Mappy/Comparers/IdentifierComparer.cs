@@ -13,7 +13,7 @@ namespace Mappy.Comparers
             _identifierFieldsAndProps = new string[identifierFieldsAndProps.Length];
             for (var i = 0; i < identifierFieldsAndProps.Length; i++)
             {
-                _identifierFieldsAndProps[i] = prefix + identifierFieldsAndProps[i];
+                _identifierFieldsAndProps[i] = $"{prefix}{identifierFieldsAndProps[i]}";
             }
         }
 

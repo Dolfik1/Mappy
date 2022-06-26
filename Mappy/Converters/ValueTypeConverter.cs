@@ -20,7 +20,7 @@ namespace Mappy.Converters
         {
             if (value == null)
             {
-                return default(T);
+                return default;
             }
 
             var type = typeof(T);

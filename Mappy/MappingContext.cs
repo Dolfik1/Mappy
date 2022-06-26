@@ -194,9 +194,10 @@ namespace Mappy
             IEnumerable<T> defaultValue,
             ICollection<T> result)
         {
-            var pfx = string.IsNullOrEmpty(prefix)
-                && string.IsNullOrEmpty(name) ? ""
-                : prefix + name;
+            var pfx =
+                string.IsNullOrEmpty(prefix) && string.IsNullOrEmpty(name) 
+                ? string.Empty
+                : $"{prefix}{name}";
 
             if (items.TryGetValue(pfx, out var arrayValue))
             {
@@ -279,9 +280,10 @@ namespace Mappy
             List<Items> values,
             IEnumerable<T> defaultValue)
         {
-            var pfx = string.IsNullOrEmpty(prefix)
-                && string.IsNullOrEmpty(name) ? ""
-                : prefix + name + Options.Delimiter;
+            var pfx = 
+                string.IsNullOrEmpty(prefix) && string.IsNullOrEmpty(name) 
+                ? string.Empty
+                : $"{prefix}{name}{Options.Delimiter}";
 
             var mapper = Options.Cache
                 .GetOrCreateTypeMap<T>(Options);

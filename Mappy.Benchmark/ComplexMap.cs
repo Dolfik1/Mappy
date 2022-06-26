@@ -8,15 +8,15 @@ namespace Mappy.Benchmark
     public class ComplexMap
     {
         public const int Iterations = 50000;
-        private Mappy Mappy;
-        private Mappy MappyBaseConverterOnly;
+        private Mappy _mappy;
+        private Mappy _mappyBaseConverterOnly;
         public IEnumerable<IDictionary<string, object>> TestData { get; set; }
 
         [GlobalSetup]
         public void Setup()
         {
-            Mappy = new Mappy();
-            MappyBaseConverterOnly = new Mappy(
+            _mappy = new Mappy();
+            _mappyBaseConverterOnly = new Mappy(
                 new MappyOptions(
                     converters: new List<ITypeConverter>
                     {
@@ -24,10 +24,10 @@ namespace Mappy.Benchmark
                     }));
 
 
-            Mappy.Map<Customer>(
+            _mappy.Map<Customer>(
                 GenerateData(1).First());
 
-            MappyBaseConverterOnly.Map<Customer>(
+            _mappyBaseConverterOnly.Map<Customer>(
                 GenerateData(1).First());
 
             Slapper.AutoMapper.Map<Customer>(
@@ -80,14 +80,14 @@ namespace Mappy.Benchmark
         [Benchmark]
         public void MappyBenchmark()
         {
-            Mappy.Map<Customer>(TestData)
+            _mappy.Map<Customer>(TestData)
                 .ToList();
         }
 
         [Benchmark]
         public void MappyBenchmarkBaseConverterOnly()
         {
-            MappyBaseConverterOnly.Map<Customer>(TestData)
+            _mappyBaseConverterOnly.Map<Customer>(TestData)
                 .ToList();
         }
 
